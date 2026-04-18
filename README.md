@@ -31,6 +31,8 @@ Do not commit `.env`.
 
 ## Run
 
+Run the Day 1 environment sanity check:
+
 ```bash
 python -m agentic_learning.main
 ```
@@ -41,9 +43,25 @@ Expected output:
 Agentic learning environment is ready.
 ```
 
+Run the Day 2 direct tool call demo:
+
+```bash
+.venv/bin/python -m agentic_learning.direct_tool_call
+```
+
+Run the Day 2 Anthropic agent tool call demo:
+
+```bash
+export ANTHROPIC_API_KEY="..."
+.venv/bin/python -m agentic_learning.agent_tool_call
+```
+
+Do not commit real API keys. Use `.env` or shell environment variables locally.
+
 ## Current Dependencies
 
 - LangChain
+- LangChain Anthropic
 - LangGraph
 - LangSmith
 
