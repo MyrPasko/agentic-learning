@@ -1,0 +1,19 @@
+[project]
+name = "agentic-learning"
+version = "0.1.0"
+description = "Practice projects for controlled, observable, and evaluable agentic systems."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "langchain>=0.3",
+    "langgraph>=0.2",
+    "langsmith>=0.2",
+    "python-dotenv>=1.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
