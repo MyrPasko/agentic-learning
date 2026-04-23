@@ -12,7 +12,7 @@ class ArithmeticResult(BaseModel):
     validation_status: Literal["validated"]
     reasoning_summary: str = Field(min_length=1, max_length=300)
 
-    @model_validator(mode="after")  # This check launches after basic check of types
+    @model_validator(mode="after")
     def validate_result(self) -> Self:
         expected = self.operands[0] * self.operands[1]
 
