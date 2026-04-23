@@ -8,7 +8,7 @@ This repository follows the 10-week agentic learning roadmap tracked in the Obsi
 
 ## Week 1 Goal
 
-Create the first runnable Python project and establish repeatable setup before adding agent behavior.
+Create the first runnable Python project and establish repeatable setup before adding agent behavior, structured outputs, and validation.
 
 ## Setup
 
@@ -56,6 +56,19 @@ export ANTHROPIC_API_KEY="..."
 .venv/bin/python -m agentic_learning.agent_tool_call
 ```
 
+Run the Day 3 deterministic schema validation demo:
+
+```bash
+.venv/bin/python -m agentic_learning.validate_arithmetic_result
+```
+
+Run the Day 3 structured output agent demo:
+
+```bash
+export ANTHROPIC_API_KEY="..."
+.venv/bin/python -m agentic_learning.structured_agent_tool_call
+```
+
 Do not commit real API keys. Use `.env` or shell environment variables locally.
 
 ## Current Dependencies
@@ -64,7 +77,12 @@ Do not commit real API keys. Use `.env` or shell environment variables locally.
 - LangChain Anthropic
 - LangGraph
 - LangSmith
+- Pydantic
 
 ## Notes
 
-Day 1 intentionally avoids model calls. The first artifact is a stable project skeleton. Agent execution, tool calling, and LangSmith traces start after the environment is reproducible.
+Day 1 intentionally avoids model calls. The first artifact is a stable project skeleton.
+
+Day 2 adds a typed multiplication tool and an Anthropic agent that calls it.
+
+Day 3 adds a validated `ArithmeticResult` schema, a deterministic validation script, and a structured output agent path that returns a typed object instead of relying on `messages[-1]`.
