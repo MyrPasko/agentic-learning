@@ -69,6 +69,13 @@ export ANTHROPIC_API_KEY="..."
 .venv/bin/python -m agentic_learning.structured_agent_tool_call
 ```
 
+Run the Day 4 routing demo:
+
+```bash
+export ANTHROPIC_API_KEY="..."
+.venv/bin/python -m agentic_learning.agent_tool_routing_demo
+```
+
 Do not commit real API keys. Use `.env` or shell environment variables locally.
 
 ## Current Dependencies
@@ -86,3 +93,5 @@ Day 1 intentionally avoids model calls. The first artifact is a stable project s
 Day 2 adds a typed multiplication tool and an Anthropic agent that calls it.
 
 Day 3 adds a validated `ArithmeticResult` schema, a deterministic validation script, and a structured output agent path that returns a typed object instead of relying on `messages[-1]`.
+
+Day 4 adds a second arithmetic tool, explicit prompt-level routing constraints, and a routing demo that shows supported tool calls and unsupported refusal behavior.
