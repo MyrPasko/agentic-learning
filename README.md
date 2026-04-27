@@ -76,6 +76,18 @@ export ANTHROPIC_API_KEY="..."
 .venv/bin/python -m agentic_learning.agent_tool_routing_demo
 ```
 
+Day 6 keeps the same routing demo entrypoint and adds deterministic fallback output:
+
+- `prompt`
+- `status`
+- `tool`
+- `answer`
+- `failure_reason`
+
+Supported addition and multiplication requests return `status: ok` with the selected tool name.
+Unsupported division returns `status: ok` with `tool: None`.
+Runtime failures return `status: fallback` with a fallback answer and a short failure reason instead of crashing the script.
+
 Do not commit real API keys. Use `.env` or shell environment variables locally.
 
 ## Current Dependencies
@@ -95,3 +107,5 @@ Day 2 adds a typed multiplication tool and an Anthropic agent that calls it.
 Day 3 adds a validated `ArithmeticResult` schema, a deterministic validation script, and a structured output agent path that returns a typed object instead of relying on `messages[-1]`.
 
 Day 4 adds a second arithmetic tool, explicit prompt-level routing constraints, and a routing demo that shows supported tool calls and unsupported refusal behavior.
+
+Day 6 adds basic runtime error handling around the routing demo so execution failures produce deterministic fallback output instead of a traceback in normal demo output.
