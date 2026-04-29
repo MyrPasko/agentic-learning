@@ -6,9 +6,55 @@ This repository follows the 10-week agentic learning roadmap tracked in the Obsi
 
 `/Users/myroslavpasko/obsidian/main/AI/AGENTIC_LEARNING`
 
-## Week 1 Goal
+## What This Project Is
 
-Create the first runnable Python project and establish repeatable setup before adding agent behavior, structured outputs, and validation.
+This is a learning repo, not a product repo. Its purpose is to build small runnable slices that prove specific agent engineering concepts one by one:
+
+- typed tools,
+- model-driven tool use,
+- structured output validation,
+- prompt-level routing constraints,
+- tracing and observability,
+- deterministic fallback behavior.
+
+Week 1 intentionally uses a narrow arithmetic demo so the focus stays on agent mechanics rather than product scope.
+
+## What Week 1 Proves
+
+By the end of Week 1, this repo proves the following:
+
+- a Python agent project can be created with repeatable local setup and documented run commands;
+- the model can be constrained to use different tools for addition and multiplication;
+- structured output can be validated as application data instead of trusted as prose;
+- unsupported requests can be separated from runtime failures;
+- runtime failures can return deterministic fallback output instead of crashing normal demo output;
+- the agent workflow can be traced in LangSmith and inspected as nested runs.
+
+## Week 1 Progression
+
+- Day 1: project skeleton, environment setup, and first runnable command.
+- Day 2: first typed tool and first live agent tool call.
+- Day 3: structured output schema plus deterministic validation.
+- Day 4: second tool and explicit routing rules.
+- Day 5: LangSmith tracing and first trace inspection.
+- Day 6: fallback output contract for runtime failures.
+
+## Current Behavior Guarantees
+
+The routing demo currently guarantees:
+
+- add requests return `status: ok` and use `add_numbers`;
+- multiply requests return `status: ok` and use `multiply_numbers`;
+- unsupported divide requests return `status: ok` with no tool selected;
+- runtime exceptions return `status: fallback` with a fallback answer and short failure reason.
+
+The fallback output shape is:
+
+- `prompt`
+- `status`
+- `tool`
+- `answer`
+- `failure_reason`
 
 ## Setup
 
@@ -27,11 +73,11 @@ Create local environment variables:
 cp .env.example .env
 ```
 
-Do not commit `.env`.
+Do not commit `.env` or real API keys.
 
 ## Run
 
-Run the Day 1 environment sanity check:
+Day 1 sanity check:
 
 ```bash
 python -m agentic_learning.main
@@ -43,52 +89,48 @@ Expected output:
 Agentic learning environment is ready.
 ```
 
-Run the Day 2 direct tool call demo:
+Day 2 direct tool call demo:
 
 ```bash
 .venv/bin/python -m agentic_learning.direct_tool_call
 ```
 
-Run the Day 2 Anthropic agent tool call demo:
+Day 2 live agent tool call demo:
 
 ```bash
 export ANTHROPIC_API_KEY="..."
 .venv/bin/python -m agentic_learning.agent_tool_call
 ```
 
-Run the Day 3 deterministic schema validation demo:
+Day 3 deterministic schema validation demo:
 
 ```bash
 .venv/bin/python -m agentic_learning.validate_arithmetic_result
 ```
 
-Run the Day 3 structured output agent demo:
+Day 3 structured output agent demo:
 
 ```bash
 export ANTHROPIC_API_KEY="..."
 .venv/bin/python -m agentic_learning.structured_agent_tool_call
 ```
 
-Run the Day 4 routing demo:
+Day 4 and Day 6 routing plus fallback demo:
 
 ```bash
 export ANTHROPIC_API_KEY="..."
 .venv/bin/python -m agentic_learning.agent_tool_routing_demo
 ```
 
-Day 6 keeps the same routing demo entrypoint and adds deterministic fallback output:
+## Tracing
 
-- `prompt`
-- `status`
-- `tool`
-- `answer`
-- `failure_reason`
+Week 1 tracing was verified in LangSmith with:
 
-Supported addition and multiplication requests return `status: ok` with the selected tool name.
-Unsupported division returns `status: ok` with `tool: None`.
-Runtime failures return `status: fallback` with a fallback answer and a short failure reason instead of crashing the script.
+- project: `agentic-learning-week1`
+- root trace: `LangGraph`
+- nested runs including `ChatAnthropic`, `tools`, `add_numbers`, and `multiply_numbers`
 
-Do not commit real API keys. Use `.env` or shell environment variables locally.
+If traces do not appear on this machine, verify local LangSmith configuration, including `LANGSMITH_TRACING`, `LANGSMITH_API_KEY`, `LANGSMITH_PROJECT`, and `LANGSMITH_ENDPOINT` when a non-default endpoint is required.
 
 ## Current Dependencies
 
@@ -104,7 +146,7 @@ Day 1 intentionally avoids model calls. The first artifact is a stable project s
 
 Day 2 adds a typed multiplication tool and an Anthropic agent that calls it.
 
-Day 3 adds a validated `ArithmeticResult` schema, a deterministic validation script, and a structured output agent path that returns a typed object instead of relying on `messages[-1]`.
+Day 3 adds a validated `ArithmeticResult` schema, a deterministic validation script, and a structured output agent path that returns a typed object instead of relying on loose final-message parsing.
 
 Day 4 adds a second arithmetic tool, explicit prompt-level routing constraints, and a routing demo that shows supported tool calls and unsupported refusal behavior.
 
