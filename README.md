@@ -19,6 +19,8 @@ This is a learning repo, not a product repo. Its purpose is to build small runna
 
 Week 1 intentionally uses a narrow arithmetic demo so the focus stays on agent mechanics rather than product scope.
 
+Week 2 starts Project 1: `AI Task Decomposer`. The first slice is intentionally contract-first: sample task inputs, a typed decomposition schema, deterministic validation, and one minimal structured-output agent path.
+
 ## What Week 1 Proves
 
 By the end of Week 1, this repo proves the following:
@@ -38,6 +40,10 @@ By the end of Week 1, this repo proves the following:
 - Day 4: second tool and explicit routing rules.
 - Day 5: LangSmith tracing and first trace inspection.
 - Day 6: fallback output contract for runtime failures.
+
+## Week 2 Progression
+
+- Day 8: first `AI Task Decomposer` contract slice with sample inputs, typed output schema, deterministic validation, and one minimal structured-output run.
 
 ## Current Behavior Guarantees
 
@@ -122,6 +128,24 @@ export ANTHROPIC_API_KEY="..."
 .venv/bin/python -m agentic_learning.agent_tool_routing_demo
 ```
 
+Day 8 deterministic task-decomposer contract demo:
+
+```bash
+.venv/bin/python -m agentic_learning.validate_task_decomposer_result
+```
+
+Day 8 structured task-decomposer demo:
+
+```bash
+export ANTHROPIC_API_KEY="..."
+.venv/bin/python -m agentic_learning.structured_task_decomposer_agent_call
+```
+
+Current Day 8 limitation:
+
+- this slice validates one narrow decomposition contract and demonstrates one structured-output run;
+- it does not use LangGraph state, review nodes, retries, or approval checkpoints yet.
+
 ## Tracing
 
 Week 1 tracing was verified in LangSmith with:
@@ -151,3 +175,5 @@ Day 3 adds a validated `ArithmeticResult` schema, a deterministic validation scr
 Day 4 adds a second arithmetic tool, explicit prompt-level routing constraints, and a routing demo that shows supported tool calls and unsupported refusal behavior.
 
 Day 6 adds basic runtime error handling around the routing demo so execution failures produce deterministic fallback output instead of a traceback in normal demo output.
+
+Day 8 starts Project 1 with `TaskDecomposerResult`, a deterministic contract validator, three sample task prompts, and a minimal structured-output path for a narrow engineering-task decomposition case.
