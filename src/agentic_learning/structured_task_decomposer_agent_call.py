@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from dotenv import load_dotenv
 from langchain.agents import create_agent
 from langchain.chat_models import init_chat_model
@@ -5,6 +7,10 @@ from langchain.chat_models import init_chat_model
 from agentic_learning.schemas.task_decomposer_result import TaskDecomposerResult
 
 load_dotenv()
+
+INPUT_FILE_PATH = (
+    Path(__file__).resolve().parent.parent / "examples" / "input_backend_endpoint.md"
+)
 
 MODEL_NAME = "claude-haiku-4-5-20251001"
 
@@ -34,13 +40,21 @@ task_decomposer_structured_agent = create_agent(
     model, system_prompt=system_prompt, response_format=TaskDecomposerResult
 )
 
-prompt = "Add /api/portfolio endpoint with validation, error handling, and tests."
 
-response = task_decomposer_structured_agent.invoke(
-    {"messages": [{"role": "user", "content": prompt}]}
-)
+def read_task_prompt() -> str:
+    return INPUT_FILE_PATH.read_text(encoding="utf-8").strip()
 
-structured_response = response["structured_response"]
 
-print(f"Prompt: {prompt}")
-print(structured_response.model_dump_json(indent=2))
+def main() -> None:
+    prompt = read_task_prompt()
+    response = task_decomposer_structured_agent.invoke(
+        {"messages": [{"role": "user", "content": prompt}]}
+    )
+    structured_response = response["structured_response"]
+
+    print(f"Prompt: {prompt}")
+    print(structured_response.model_dump_json(indent=2))
+
+
+if __name__ == "__main__":
+    main()
