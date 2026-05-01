@@ -4,33 +4,77 @@ valid_payload = {
     "original_task": "Add /api/portfolio endpoint with validation, error handling, and tests.",
     "plan_summary": "Add a narrow portfolio API slice with explicit input validation, predictable error responses, and basic automated coverage.",
     "implementation_tasks": [
-        "Define the /api/portfolio route and expected request/response contract.",
-        "Implement request validation for required fields and invalid input types.",
-        "Add endpoint logic plus explicit error handling for validation and server failures.",
-        "Write integration and unit tests for success and failure paths.",
+        {
+            "title": "Define endpoint contract",
+            "description": "Define the request and response contract for the /api/portfolio endpoint before implementation begins.",
+            "done_criteria": [
+                "The endpoint method and route are documented.",
+                "The success response shape is explicitly defined.",
+                "Validation failure responses are described.",
+            ],
+        },
+        {
+            "title": "Implement request validation",
+            "description": "Validate required fields and reject malformed request payloads before business logic executes.",
+            "done_criteria": [
+                "Missing required fields return a 400 response.",
+                "Invalid field types are rejected consistently.",
+                "Validation errors use a stable response shape.",
+            ],
+        },
     ],
     "risks": [
-        "Validation rules may be underspecified and allow malformed requests.",
-        "Error responses may leak internal implementation details if not normalized.",
+        {
+            "risk": "Validation rules may be underspecified.",
+            "impact": "high",
+            "mitigation": "Define explicit validation rules and cover failure paths with focused tests.",
+        },
+        {
+            "risk": "Error responses may leak internal details.",
+            "impact": "medium",
+            "mitigation": "Normalize error output and verify failure contracts in integration tests.",
+        },
     ],
     "test_ideas": [
-        "Verify a valid request returns the expected response shape.",
-        "Verify invalid payloads return a 400 response with clear validation errors.",
-        "Verify unexpected internal failures return a stable error contract.",
+        {
+            "test_type": "integration",
+            "scenario": "Send a valid request to the portfolio endpoint.",
+            "expected_behavior": "The endpoint returns the expected response shape with a success status.",
+        },
+        {
+            "test_type": "integration",
+            "scenario": "Send an invalid payload with missing required fields.",
+            "expected_behavior": "The endpoint returns a 400 response with clear validation errors.",
+        },
     ],
     "unknowns": [
-        "Which HTTP method and request shape should the endpoint support?",
-        "What authentication and authorization rules apply to this endpoint?",
+        {
+            "question": "What authentication rules apply to this endpoint?",
+            "why_it_matters": "Authentication requirements change the contract, failure paths, and test coverage.",
+        }
     ],
 }
 
 invalid_payload = {
     "original_task": "Add /api/portfolio endpoint with validation, error handling, and tests.",
-    "plan_summary": "Add the endpoint.",
-    "implementation_tasks": ["Define the route."],
-    "risks": [],
-    "test_ideas": [],
-    "unknowns": [],
+    "plan_summary": "Add the endpoint with validation.",
+    "implementation_tasks": [
+        {
+            "title": "Define route",
+            "description": "Add route and document the expected contract for the endpoint.",
+            "done_criteria": [
+                "Return a 400 response for missing required fields.",
+                "return a 400 response for missing required fields.",
+            ],
+        }
+    ],
+    "risks": [
+        {"risk": "Bad validation.", "impact": "critical", "mitigation": "Fix it."}
+    ],
+    "test_ideas": [
+        {"test_type": "ui", "scenario": "Bad case", "expected_behavior": "Fails"}
+    ],
+    "unknowns": [{"question": "Auth?", "why_it_matters": "Unknown."}],
 }
 
 
