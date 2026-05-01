@@ -44,6 +44,7 @@ By the end of Week 1, this repo proves the following:
 ## Week 2 Progression
 
 - Day 8: first `AI Task Decomposer` contract slice with sample inputs, typed output schema, deterministic validation, and one minimal structured-output run.
+- Day 9: harden the decomposer contract with nested typed items, stricter validation, trimmed input normalization, duplicate checks for `done_criteria`, and a stronger structured-output prompt.
 
 ## Current Behavior Guarantees
 
@@ -128,22 +129,22 @@ export ANTHROPIC_API_KEY="..."
 .venv/bin/python -m agentic_learning.agent_tool_routing_demo
 ```
 
-Day 8 deterministic task-decomposer contract demo:
+Day 8 and Day 9 deterministic task-decomposer contract demo:
 
 ```bash
 .venv/bin/python -m agentic_learning.validate_task_decomposer_result
 ```
 
-Day 8 structured task-decomposer demo:
+Day 8 and Day 9 structured task-decomposer demo:
 
 ```bash
 export ANTHROPIC_API_KEY="..."
 .venv/bin/python -m agentic_learning.structured_task_decomposer_agent_call
 ```
 
-Current Day 8 limitation:
+Current Day 9 limitation:
 
-- this slice validates one narrow decomposition contract and demonstrates one structured-output run;
+- this slice validates a stricter nested decomposition contract and demonstrates one structured-output run;
 - it does not use LangGraph state, review nodes, retries, or approval checkpoints yet.
 
 ## Tracing
@@ -177,3 +178,5 @@ Day 4 adds a second arithmetic tool, explicit prompt-level routing constraints, 
 Day 6 adds basic runtime error handling around the routing demo so execution failures produce deterministic fallback output instead of a traceback in normal demo output.
 
 Day 8 starts Project 1 with `TaskDecomposerResult`, a deterministic contract validator, three sample task prompts, and a minimal structured-output path for a narrow engineering-task decomposition case.
+
+Day 9 hardens `TaskDecomposerResult` so the Week 2 contract now uses nested typed models for implementation tasks, risks, test ideas, and unknowns; stricter field and list constraints; normalization of trimmed text; duplicate rejection for `done_criteria`; and a more explicit structured-output prompt that keeps the model aligned with the schema.
