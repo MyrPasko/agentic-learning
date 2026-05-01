@@ -1,1 +1,1 @@
-Add /api/portfolio endpoint with validation, error handling, and tests.
+Add /api/portfolio/block endpoint with validation, error handling, and tests.

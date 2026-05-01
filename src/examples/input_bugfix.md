@@ -1,1 +1,0 @@
-Fix duplicate form submission bug in React checkout flow.

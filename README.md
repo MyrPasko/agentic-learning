@@ -45,6 +45,7 @@ By the end of Week 1, this repo proves the following:
 
 - Day 8: first `AI Task Decomposer` contract slice with sample inputs, typed output schema, deterministic validation, and one minimal structured-output run.
 - Day 9: harden the decomposer contract with nested typed items, stricter validation, trimmed input normalization, duplicate checks for `done_criteria`, and a stronger structured-output prompt.
+- Day 10: replace the hardcoded decomposer prompt with one explicit file-ingestion path that reads a sample task from `src/examples/input_backend_endpoint.md`.
 
 ## Current Behavior Guarantees
 
@@ -135,17 +136,21 @@ Day 8 and Day 9 deterministic task-decomposer contract demo:
 .venv/bin/python -m agentic_learning.validate_task_decomposer_result
 ```
 
-Day 8 and Day 9 structured task-decomposer demo:
+Day 8 to Day 10 structured task-decomposer demo:
 
 ```bash
 export ANTHROPIC_API_KEY="..."
 .venv/bin/python -m agentic_learning.structured_task_decomposer_agent_call
 ```
 
-Current Day 9 limitation:
+Day 10 structured-input source:
 
-- this slice validates a stricter nested decomposition contract and demonstrates one structured-output run;
-- it does not use LangGraph state, review nodes, retries, or approval checkpoints yet.
+- `src/examples/input_backend_endpoint.md`
+
+Current Day 10 limitation:
+
+- this slice reads one fixed markdown task input and returns the stricter nested decomposition contract;
+- it does not support CLI-selected files, multi-source ingestion, LangGraph state, review nodes, retries, or approval checkpoints yet.
 
 ## Tracing
 
@@ -180,3 +185,5 @@ Day 6 adds basic runtime error handling around the routing demo so execution fai
 Day 8 starts Project 1 with `TaskDecomposerResult`, a deterministic contract validator, three sample task prompts, and a minimal structured-output path for a narrow engineering-task decomposition case.
 
 Day 9 hardens `TaskDecomposerResult` so the Week 2 contract now uses nested typed models for implementation tasks, risks, test ideas, and unknowns; stricter field and list constraints; normalization of trimmed text; duplicate rejection for `done_criteria`; and a more explicit structured-output prompt that keeps the model aligned with the schema.
+
+Day 10 keeps the same contract and agent prompt, but replaces the hardcoded inline task string with one explicit file read from `src/examples/input_backend_endpoint.md` so the decomposer now consumes a real sample input artifact.
