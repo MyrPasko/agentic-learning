@@ -162,6 +162,10 @@ Week 1 tracing was verified in LangSmith with:
 
 If traces do not appear on this machine, verify local LangSmith configuration, including `LANGSMITH_TRACING`, `LANGSMITH_API_KEY`, `LANGSMITH_PROJECT`, and `LANGSMITH_ENDPOINT` when a non-default endpoint is required.
 
+This repository uses `LANGSMITH_PROJECT=agentic-learning-week1` as the canonical project name for the preserved Week 1 tracing evidence and follow-up local runs. If you change the project name locally, new traces will land in a different bucket and the historical notes in this repo will no longer match what you see in LangSmith.
+
+If your LangSmith API key belongs to multiple workspaces, also set `LANGSMITH_WORKSPACE_ID` explicitly so traces do not disappear into a different workspace than the one you are viewing.
+
 ## Current Dependencies
 
 - LangChain
