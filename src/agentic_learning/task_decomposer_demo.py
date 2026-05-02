@@ -1,12 +1,20 @@
-from agentic_learning.agents.arithmetic_agent import arithmetic_agent
+from pathlib import Path
+
 from agentic_learning.helpers.fallback_output import fallback_output
 from agentic_learning.helpers.ok_output import ok_output
 from agentic_learning.helpers.ToolCall import ToolCall
+from agentic_learning.structured_task_decomposer_agent_call import (
+    task_decomposer_structured_agent,
+)
+
+INPUT_FILE_PATH = (
+    Path(__file__).resolve().parent.parent / "examples" / "input_backend_endpoint.md"
+)
 
 
 def get_tool_call(prompt: str) -> ToolCall:
     try:
-        result = arithmetic_agent.invoke(
+        result = task_decomposer_structured_agent.invoke(
             {"messages": [{"role": "user", "content": prompt}]}
         )
         return ok_output(prompt, result)
@@ -24,10 +32,12 @@ def run_prompt(prompt: str) -> None:
     print("---")
 
 
+def read_task_prompt() -> str:
+    return INPUT_FILE_PATH.read_text(encoding="utf-8").strip()
+
+
 def main() -> None:
-    run_prompt("Please use the tool to add 12.5 and 7.25.")
-    run_prompt("Please use the tool to multiply 12.5 by 7.25.")
-    run_prompt("Please use the tool to divide 12.5 by 7.25.")
+    run_prompt(read_task_prompt())
 
 
 if __name__ == "__main__":

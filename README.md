@@ -46,6 +46,7 @@ By the end of Week 1, this repo proves the following:
 - Day 8: first `AI Task Decomposer` contract slice with sample inputs, typed output schema, deterministic validation, and one minimal structured-output run.
 - Day 9: harden the decomposer contract with nested typed items, stricter validation, trimmed input normalization, duplicate checks for `done_criteria`, and a stronger structured-output prompt.
 - Day 10: replace the hardcoded decomposer prompt with one explicit file-ingestion path that reads a sample task from `src/examples/input_backend_endpoint.md`.
+- Day 11: add one narrow `analyze_task_risks` tool path and a demo entrypoint that makes tool use visible alongside the final structured decomposition.
 
 ## Current Behavior Guarantees
 
@@ -136,7 +137,7 @@ Day 8 and Day 9 deterministic task-decomposer contract demo:
 .venv/bin/python -m agentic_learning.validate_task_decomposer_result
 ```
 
-Day 8 to Day 10 structured task-decomposer demo:
+Day 8 to Day 11 structured task-decomposer demo:
 
 ```bash
 export ANTHROPIC_API_KEY="..."
@@ -147,10 +148,24 @@ Day 10 structured-input source:
 
 - `src/examples/input_backend_endpoint.md`
 
-Current Day 10 limitation:
+Day 11 tool-visible task-decomposer demo:
 
-- this slice reads one fixed markdown task input and returns the stricter nested decomposition contract;
-- it does not support CLI-selected files, multi-source ingestion, LangGraph state, review nodes, retries, or approval checkpoints yet.
+```bash
+export ANTHROPIC_API_KEY="..."
+.venv/bin/python -m agentic_learning.task_decomposer_demo
+```
+
+Expected Day 11 demo output includes:
+
+- `Prompt: ...`
+- `Status: ok`
+- `Tool: analyze_task_risks`
+- final structured decomposition in the answer payload
+
+Current Day 11 limitation:
+
+- this slice reads one fixed markdown task input and exposes one narrow risk-analysis tool path;
+- it does not support CLI-selected files, multi-source ingestion, LangGraph state, review nodes, retries, approval checkpoints, or multi-tool planning yet.
 
 ## Tracing
 
@@ -191,3 +206,5 @@ Day 8 starts Project 1 with `TaskDecomposerResult`, a deterministic contract val
 Day 9 hardens `TaskDecomposerResult` so the Week 2 contract now uses nested typed models for implementation tasks, risks, test ideas, and unknowns; stricter field and list constraints; normalization of trimmed text; duplicate rejection for `done_criteria`; and a more explicit structured-output prompt that keeps the model aligned with the schema.
 
 Day 10 keeps the same contract and agent prompt, but replaces the hardcoded inline task string with one explicit file read from `src/examples/input_backend_endpoint.md` so the decomposer now consumes a real sample input artifact.
+
+Day 11 keeps the Day 10 ingestion path, adds one explicit `analyze_task_risks` tool, and introduces `task_decomposer_demo` so the repo can show both the final structured result and the tool name used during the run.
