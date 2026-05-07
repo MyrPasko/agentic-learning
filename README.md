@@ -47,6 +47,7 @@ By the end of Week 1, this repo proves the following:
 - Day 9: harden the decomposer contract with nested typed items, stricter validation, trimmed input normalization, duplicate checks for `done_criteria`, and a stronger structured-output prompt.
 - Day 10: replace the hardcoded decomposer prompt with one explicit file-ingestion path that reads a sample task from `src/examples/input_backend_endpoint.md`.
 - Day 11: add one narrow `analyze_task_risks` tool path and a demo entrypoint that makes tool use visible alongside the final structured decomposition.
+- Day 12: move the Day 10-11 decomposer path into the first explicit LangGraph workflow with `read_input -> run_decomposer`, while preserving file ingestion, the structured contract, and the narrow risk-analysis tool path.
 
 ## Current Behavior Guarantees
 
@@ -137,7 +138,7 @@ Day 8 and Day 9 deterministic task-decomposer contract demo:
 .venv/bin/python -m agentic_learning.validate_task_decomposer_result
 ```
 
-Day 8 to Day 11 structured task-decomposer demo:
+Day 8 to Day 11 direct structured task-decomposer agent path:
 
 ```bash
 export ANTHROPIC_API_KEY="..."
@@ -148,24 +149,25 @@ Day 10 structured-input source:
 
 - `src/examples/input_backend_endpoint.md`
 
-Day 11 tool-visible task-decomposer demo:
+Day 11 and Day 12 graph-backed task-decomposer demo:
 
 ```bash
 export ANTHROPIC_API_KEY="..."
 .venv/bin/python -m agentic_learning.task_decomposer_demo
 ```
 
-Expected Day 11 demo output includes:
+Expected Day 12 demo output includes:
 
 - `Prompt: ...`
 - `Status: ok`
 - `Tool: analyze_task_risks`
 - final structured decomposition in the answer payload
 
-Current Day 11 limitation:
+Current Day 12 limitation:
 
-- this slice reads one fixed markdown task input and exposes one narrow risk-analysis tool path;
-- it does not support CLI-selected files, multi-source ingestion, LangGraph state, review nodes, retries, approval checkpoints, or multi-tool planning yet.
+- this slice now routes through one explicit LangGraph workflow with two steps: `read_input` and `run_decomposer`;
+- it still reads one fixed markdown task input and exposes one narrow risk-analysis tool path;
+- it does not support CLI-selected files, multi-source ingestion, conditional routing, review nodes, retries, approval checkpoints, or multi-tool planning yet.
 
 ## Tracing
 
@@ -208,3 +210,5 @@ Day 9 hardens `TaskDecomposerResult` so the Week 2 contract now uses nested type
 Day 10 keeps the same contract and agent prompt, but replaces the hardcoded inline task string with one explicit file read from `src/examples/input_backend_endpoint.md` so the decomposer now consumes a real sample input artifact.
 
 Day 11 keeps the Day 10 ingestion path, adds one explicit `analyze_task_risks` tool, and introduces `task_decomposer_demo` so the repo can show both the final structured result and the tool name used during the run.
+
+Day 12 keeps the Day 11 behavior but makes the control flow explicit: `task_decomposer_graph.py` now owns a minimal LangGraph workflow where `read_input` loads the fixed markdown task and `run_decomposer` executes the structured agent, records the tool name when one is used, and returns workflow state for the demo layer to print.
