@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, TypedDict, Literal
+from typing import Any, Literal, TypedDict
 
 from langgraph.graph import END, START, StateGraph
 
@@ -14,6 +14,10 @@ INPUT_FILE_PATH = (
 
 MAX_RETRY_COUNT = 1
 
+ApprovalStatus = Literal["approved", "review_required"] | None
+ReviewReason = str | None
+RouteAfterDecomposer = Literal["done", "retry", "fallback", "review"]
+
 
 class TaskDecomposerState(TypedDict, total=False):
     prompt: str | None
@@ -22,6 +26,8 @@ class TaskDecomposerState(TypedDict, total=False):
     failure_reason: str | None
     retry_count: int
     used_fallback: bool
+    approval_status: ApprovalStatus
+    review_reason: ReviewReason
 
 
 def read_input(_: TaskDecomposerState) -> TaskDecomposerState:
@@ -33,7 +39,26 @@ def read_input(_: TaskDecomposerState) -> TaskDecomposerState:
         "failure_reason": None,
         "retry_count": 0,
         "used_fallback": False,
+        "approval_status": None,
+        "review_reason": None,
     }
+
+
+def need_for_approval(
+    structured_response: TaskDecomposerResult,
+) -> tuple[ApprovalStatus, ReviewReason]:
+    unknown_items = getattr(structured_response, "unknowns", [])
+    risk_items = getattr(structured_response, "risks", [])
+    is_at_least_one_unknown_item = len(unknown_items) > 0
+    is_at_least_one_risk_high = any(risk.impact == "high" for risk in risk_items)
+
+    if is_at_least_one_unknown_item:
+        return "review_required", "Unknown items detected."
+
+    if is_at_least_one_risk_high:
+        return "review_required", "At least one risk item is high."
+
+    return "approved", None
 
 
 def run_decomposer(state: TaskDecomposerState) -> TaskDecomposerState:
@@ -57,6 +82,7 @@ def run_decomposer(state: TaskDecomposerState) -> TaskDecomposerState:
 
         messages = result["messages"]
         structured_response = result["structured_response"]
+        approval_status, review_reason = need_for_approval(structured_response)
 
         tool_call_message: Any = next(
             (message for message in messages if getattr(message, "tool_calls", None)),
@@ -77,6 +103,8 @@ def run_decomposer(state: TaskDecomposerState) -> TaskDecomposerState:
             "structured_response": structured_response,
             "tool_name": tool_name,
             "failure_reason": None,
+            "approval_status": approval_status,
+            "review_reason": review_reason,
         }
     except Exception as e:
         return {
@@ -88,9 +116,16 @@ def run_decomposer(state: TaskDecomposerState) -> TaskDecomposerState:
             "used_fallback": False,
         }
 
-def route_after_decomposer(state: TaskDecomposerState) -> Literal["done", "retry", "fallback"]:
+
+def route_after_decomposer(
+    state: TaskDecomposerState,
+) -> RouteAfterDecomposer:
     failure_reason = state.get("failure_reason")
     retry_count = state.get("retry_count", 0)
+    approval_status = state.get("approval_status")
+
+    if approval_status == "review_required" and not failure_reason:
+        return "review"
 
     if not failure_reason:
         return "done"
@@ -99,6 +134,7 @@ def route_after_decomposer(state: TaskDecomposerState) -> Literal["done", "retry
         return "retry"
 
     return "fallback"
+
 
 def build_fallback(state: TaskDecomposerState) -> TaskDecomposerState:
     return {
@@ -110,19 +146,30 @@ def build_fallback(state: TaskDecomposerState) -> TaskDecomposerState:
         "used_fallback": True,
     }
 
+
+def review_output(state: TaskDecomposerState) -> TaskDecomposerState:
+    return state
+
+
 graph_builder = StateGraph(TaskDecomposerState)
 graph_builder.add_node("read_input", read_input)
 graph_builder.add_node("run_decomposer", run_decomposer)
 graph_builder.add_node("build_fallback", build_fallback)
+graph_builder.add_node("review_output", review_output)
 
 graph_builder.add_edge(START, "read_input")
 graph_builder.add_edge("read_input", "run_decomposer")
-graph_builder.add_conditional_edges("run_decomposer", route_after_decomposer,
-                                    {
-                                        "done": END,
-                                        "retry": "run_decomposer",
-                                        "fallback": "build_fallback"
-                                    })
+graph_builder.add_conditional_edges(
+    "run_decomposer",
+    route_after_decomposer,
+    {
+        "done": END,
+        "retry": "run_decomposer",
+        "fallback": "build_fallback",
+        "review": "review_output",
+    },
+)
 graph_builder.add_edge("build_fallback", END)
+graph_builder.add_edge("review_output", END)
 
 task_decomposer_graph = graph_builder.compile()
