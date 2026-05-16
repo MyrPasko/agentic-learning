@@ -1,0 +1,39 @@
+{
+  "terminal": {
+    "detect_venv": {
+      "on": {
+        "directories": [
+          ".venv"
+        ],
+        "activate_script": "default"
+      }
+    }
+  },
+  "languages": {
+    "Python": {
+      "language_servers": [
+        "basedpyright",
+        "ruff"
+      ],
+      "formatter": {
+        "language_server": {
+          "name": "ruff"
+        }
+      },
+      "code_actions_on_format": {
+        "source.organizeImports.ruff": true
+      },
+      "format_on_save": "on",
+      "tab_size": 4
+    }
+  },
+  "lsp": {
+    "basedpyright": {
+      "settings": {
+        "basedpyright.analysis": {
+          "diagnosticMode": "workspace"
+        }
+      }
+    }
+  }
+}

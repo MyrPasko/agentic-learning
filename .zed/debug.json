@@ -1,0 +1,30 @@
+[
+  {
+    "label": "Python Active File",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "program": "$ZED_FILE",
+    "cwd": "$ZED_WORKTREE_ROOT"
+  },
+  {
+    "label": "Run main module",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "module": "agentic_learning.main",
+    "cwd": "$ZED_WORKTREE_ROOT"
+  },
+  {
+    "label": "Run routing demo",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "module": "agentic_learning.agent_tool_routing_demo",
+    "cwd": "$ZED_WORKTREE_ROOT"
+  },
+  {
+    "label": "Run task decomposer demo",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "module": "agentic_learning.task_decomposer_demo",
+    "cwd": "$ZED_WORKTREE_ROOT"
+  }
+]
