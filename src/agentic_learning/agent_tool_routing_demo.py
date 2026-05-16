@@ -1,11 +1,15 @@
-from agentic_learning.helpers.ToolCall import ToolCall
+from agentic_learning.agents.arithmetic_agent import arithmetic_agent
 from agentic_learning.helpers.fallback_output import fallback_output
 from agentic_learning.helpers.ok_output import ok_output
+from agentic_learning.helpers.ToolCall import ToolCall
 
 
 def get_tool_call(prompt: str) -> ToolCall:
     try:
-        return ok_output(prompt)
+        result = arithmetic_agent.invoke(
+            {"messages": [{"role": "user", "content": prompt}]}
+        )
+        return ok_output(prompt, result)
     except Exception as e:
         return fallback_output(prompt, e)
 

@@ -19,6 +19,8 @@ This is a learning repo, not a product repo. Its purpose is to build small runna
 
 Week 1 intentionally uses a narrow arithmetic demo so the focus stays on agent mechanics rather than product scope.
 
+Week 2 starts Project 1: `AI Task Decomposer`. The first slice is intentionally contract-first: sample task inputs, a typed decomposition schema, deterministic validation, and one minimal structured-output agent path.
+
 ## What Week 1 Proves
 
 By the end of Week 1, this repo proves the following:
@@ -38,6 +40,15 @@ By the end of Week 1, this repo proves the following:
 - Day 4: second tool and explicit routing rules.
 - Day 5: LangSmith tracing and first trace inspection.
 - Day 6: fallback output contract for runtime failures.
+
+## Week 2 Progression
+
+- Day 8: first `AI Task Decomposer` contract slice with sample inputs, typed output schema, deterministic validation, and one minimal structured-output run.
+- Day 9: harden the decomposer contract with nested typed items, stricter validation, trimmed input normalization, duplicate checks for `done_criteria`, and a stronger structured-output prompt.
+- Day 10: replace the hardcoded decomposer prompt with one explicit file-ingestion path that reads a sample task from `src/examples/input_backend_endpoint.md`.
+- Day 11: add one narrow `analyze_task_risks` tool path and a demo entrypoint that makes tool use visible alongside the final structured decomposition.
+- Day 12: move the Day 10-11 decomposer path into the first explicit LangGraph workflow with `read_input -> run_decomposer`, while preserving file ingestion, the structured contract, and the narrow risk-analysis tool path.
+- Day 13: add one forced-failure trigger for `analyze_task_risks` plus one bounded retry and fallback branch around the graph-backed decomposer run.
 
 ## Current Behavior Guarantees
 
@@ -122,6 +133,79 @@ export ANTHROPIC_API_KEY="..."
 .venv/bin/python -m agentic_learning.agent_tool_routing_demo
 ```
 
+Day 8 and Day 9 deterministic task-decomposer contract demo:
+
+```bash
+.venv/bin/python -m agentic_learning.validate_task_decomposer_result
+```
+
+Week 2 canonical demo set:
+
+- contract validation:
+
+```bash
+.venv/bin/python -m agentic_learning.validate_task_decomposer_result
+```
+
+- normal graph-backed decomposer run:
+
+```bash
+export ANTHROPIC_API_KEY="..."
+.venv/bin/python -m agentic_learning.task_decomposer_demo
+```
+
+- forced-failure retry/fallback run:
+
+```bash
+export ANTHROPIC_API_KEY="..."
+FORCE_RISK_TOOL_FAILURE=1 .venv/bin/python -m agentic_learning.task_decomposer_demo
+```
+
+Day 8 to Day 11 direct structured task-decomposer agent path:
+
+```bash
+export ANTHROPIC_API_KEY="..."
+.venv/bin/python -m agentic_learning.structured_task_decomposer_agent_call
+```
+
+Day 10 structured-input source:
+
+- `src/examples/input_backend_endpoint.md`
+
+Day 11 to Day 13 graph-backed task-decomposer demo:
+
+```bash
+export ANTHROPIC_API_KEY="..."
+.venv/bin/python -m agentic_learning.task_decomposer_demo
+```
+
+Forced-failure demo for Day 13:
+
+```bash
+export ANTHROPIC_API_KEY="..."
+FORCE_RISK_TOOL_FAILURE=1 .venv/bin/python -m agentic_learning.task_decomposer_demo
+```
+
+Expected normal Day 13 demo output includes:
+
+- `Prompt: ...`
+- `Status: ok`
+- `Tool: analyze_task_risks`
+- final structured decomposition in the answer payload
+
+Expected forced-failure Day 13 demo output includes:
+
+- `Status: fallback`
+- `Failure reason: Forced failure for analyze_task_risks.`
+- `Retry count: 2`
+
+Current Day 13 limitation:
+
+- this slice now routes through one explicit LangGraph workflow with one bounded retry around the `run_decomposer` node before fallback;
+- it still reads one fixed markdown task input and exposes one narrow risk-analysis tool path;
+- retry is modeled around the `run_decomposer` node, not as a separately modeled tool node;
+- it does not support CLI-selected files, multi-source ingestion, review nodes, approval checkpoints, or multi-tool planning yet.
+
 ## Tracing
 
 Week 1 tracing was verified in LangSmith with:
@@ -131,6 +215,10 @@ Week 1 tracing was verified in LangSmith with:
 - nested runs including `ChatAnthropic`, `tools`, `add_numbers`, and `multiply_numbers`
 
 If traces do not appear on this machine, verify local LangSmith configuration, including `LANGSMITH_TRACING`, `LANGSMITH_API_KEY`, `LANGSMITH_PROJECT`, and `LANGSMITH_ENDPOINT` when a non-default endpoint is required.
+
+This repository uses `LANGSMITH_PROJECT=agentic-learning-week1` as the canonical project name for the preserved Week 1 tracing evidence and follow-up local runs. If you change the project name locally, new traces will land in a different bucket and the historical notes in this repo will no longer match what you see in LangSmith.
+
+If your LangSmith API key belongs to multiple workspaces, also set `LANGSMITH_WORKSPACE_ID` explicitly so traces do not disappear into a different workspace than the one you are viewing.
 
 ## Current Dependencies
 
@@ -151,3 +239,15 @@ Day 3 adds a validated `ArithmeticResult` schema, a deterministic validation scr
 Day 4 adds a second arithmetic tool, explicit prompt-level routing constraints, and a routing demo that shows supported tool calls and unsupported refusal behavior.
 
 Day 6 adds basic runtime error handling around the routing demo so execution failures produce deterministic fallback output instead of a traceback in normal demo output.
+
+Day 8 starts Project 1 with `TaskDecomposerResult`, a deterministic contract validator, three sample task prompts, and a minimal structured-output path for a narrow engineering-task decomposition case.
+
+Day 9 hardens `TaskDecomposerResult` so the Week 2 contract now uses nested typed models for implementation tasks, risks, test ideas, and unknowns; stricter field and list constraints; normalization of trimmed text; duplicate rejection for `done_criteria`; and a more explicit structured-output prompt that keeps the model aligned with the schema.
+
+Day 10 keeps the same contract and agent prompt, but replaces the hardcoded inline task string with one explicit file read from `src/examples/input_backend_endpoint.md` so the decomposer now consumes a real sample input artifact.
+
+Day 11 keeps the Day 10 ingestion path, adds one explicit `analyze_task_risks` tool, and introduces `task_decomposer_demo` so the repo can show both the final structured result and the tool name used during the run.
+
+Day 12 keeps the Day 11 behavior but makes the control flow explicit: `task_decomposer_graph.py` now owns a minimal LangGraph workflow where `read_input` loads the fixed markdown task and `run_decomposer` executes the structured agent, records the tool name when one is used, and returns workflow state for the demo layer to print.
+
+Day 13 keeps the Day 12 graph boundary, adds one forced-failure trigger for `analyze_task_risks`, one bounded retry before fallback, and visible retry-count evidence in the demo output so the degraded path can be exercised deliberately instead of inferred.
