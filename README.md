@@ -4,7 +4,7 @@ Practice repository for building controlled, observable, and evaluable agentic s
 
 This repository follows the 10-week agentic learning roadmap tracked in the Obsidian vault at:
 
-`/Users/myroslavpasko/obsidian/Docs/AI/AGENTIC_LEARNING`
+`/Users/myroslavpasko/obsidian/main/AI/AGENTIC_LEARNING`
 
 ## What This Project Is
 
@@ -137,6 +137,28 @@ Day 8 and Day 9 deterministic task-decomposer contract demo:
 
 ```bash
 .venv/bin/python -m agentic_learning.validate_task_decomposer_result
+```
+
+Week 2 canonical demo set:
+
+- contract validation:
+
+```bash
+.venv/bin/python -m agentic_learning.validate_task_decomposer_result
+```
+
+- normal graph-backed decomposer run:
+
+```bash
+export ANTHROPIC_API_KEY="..."
+.venv/bin/python -m agentic_learning.task_decomposer_demo
+```
+
+- forced-failure retry/fallback run:
+
+```bash
+export ANTHROPIC_API_KEY="..."
+FORCE_RISK_TOOL_FAILURE=1 .venv/bin/python -m agentic_learning.task_decomposer_demo
 ```
 
 Day 8 to Day 11 direct structured task-decomposer agent path:
