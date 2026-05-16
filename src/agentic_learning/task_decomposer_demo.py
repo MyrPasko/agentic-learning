@@ -8,8 +8,10 @@ def run_graph() -> None:
     structured_response = result.get("structured_response")
     tool_name = result.get("tool_name")
     failure_reason = result.get("failure_reason")
+    used_fallback = result.get("used_fallback", False)
+    retry_count = result.get("retry_count", 0)
 
-    status = "fallback" if failure_reason else "ok"
+    status = "fallback" if used_fallback else "ok"
     answer = (
         structured_response.model_dump_json(indent=2)
         if structured_response
@@ -21,6 +23,7 @@ def run_graph() -> None:
     print(f"Tool: {tool_name}")
     print(f"Answer: {answer}")
     print(f"Failure reason: {failure_reason}")
+    print(f"Retry count: {retry_count}")
     print("---")
 
 

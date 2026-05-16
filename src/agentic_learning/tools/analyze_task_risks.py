@@ -1,4 +1,5 @@
 import json
+import os
 
 from langchain_core.tools import StructuredTool
 
@@ -42,6 +43,10 @@ DEFAULT_RISK_CANDIDATES = [
 
 def _analyze_task_risks(task: str) -> str:
     """Return structured risk candidates for tasks that match the narrow Day 11 scope."""
+    force_failure = os.getenv("FORCE_RISK_TOOL_FAILURE")
+    if force_failure == "1":
+        raise RuntimeError("Forced failure for analyze_task_risks.")
+
     task_text = task.lower()
     risk_candidates = (
         DEFAULT_RISK_CANDIDATES
