@@ -12,6 +12,7 @@ def run_graph() -> None:
     retry_count = result.get("retry_count", 0)
     approval_status = result.get("approval_status")
     review_reason = result.get("review_reason")
+    review_summary = result.get("review_summary")
 
     status = "fallback" if used_fallback else "ok"
     answer = (
@@ -28,6 +29,7 @@ def run_graph() -> None:
     print(f"Retry count: {retry_count}")
     print(f"Approval status: {approval_status}")
     print(f"Review reason: {review_reason}")
+    print(f"Review summary: {review_summary}")
     print("---")
 
 
