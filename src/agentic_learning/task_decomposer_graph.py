@@ -3,7 +3,11 @@ from typing import Any, Literal, TypedDict
 
 from langgraph.graph import END, START, StateGraph
 
-from agentic_learning.schemas.task_decomposer_result import TaskDecomposerResult
+from agentic_learning.schemas.task_decomposer_result import (
+    RiskItem,
+    TaskDecomposerResult,
+    UnknownItem,
+)
 from agentic_learning.structured_task_decomposer_agent_call import (
     task_decomposer_structured_agent,
 )
@@ -28,6 +32,7 @@ class TaskDecomposerState(TypedDict, total=False):
     used_fallback: bool
     approval_status: ApprovalStatus
     review_reason: ReviewReason
+    review_summary: str | None
 
 
 def read_input(_: TaskDecomposerState) -> TaskDecomposerState:
@@ -41,16 +46,34 @@ def read_input(_: TaskDecomposerState) -> TaskDecomposerState:
         "used_fallback": False,
         "approval_status": None,
         "review_reason": None,
+        "review_summary": None,
     }
+
+
+def retrieve_unknowns_and_risks(
+    structured_response: TaskDecomposerResult,
+) -> tuple[list[UnknownItem], list[RiskItem]]:
+    unknown_items = getattr(structured_response, "unknowns", [])
+    risk_items = getattr(structured_response, "risks", [])
+    return unknown_items, risk_items
+
+
+def are_there_unknowns_and_risks(
+    structured_response: TaskDecomposerResult,
+) -> tuple[bool, bool]:
+    unknown_items, risk_items = retrieve_unknowns_and_risks(structured_response)
+    is_at_least_one_unknown_item = len(unknown_items) > 0
+    is_at_least_one_risk_high = any(risk.impact == "high" for risk in risk_items)
+
+    return is_at_least_one_unknown_item, is_at_least_one_risk_high
 
 
 def need_for_approval(
     structured_response: TaskDecomposerResult,
 ) -> tuple[ApprovalStatus, ReviewReason]:
-    unknown_items = getattr(structured_response, "unknowns", [])
-    risk_items = getattr(structured_response, "risks", [])
-    is_at_least_one_unknown_item = len(unknown_items) > 0
-    is_at_least_one_risk_high = any(risk.impact == "high" for risk in risk_items)
+    is_at_least_one_unknown_item, is_at_least_one_risk_high = (
+        are_there_unknowns_and_risks(structured_response)
+    )
 
     if is_at_least_one_unknown_item:
         return "review_required", "Unknown items detected."
@@ -148,6 +171,11 @@ def build_fallback(state: TaskDecomposerState) -> TaskDecomposerState:
 
 
 def review_output(state: TaskDecomposerState) -> TaskDecomposerState:
+    structured_response = state.get("structured_response")
+    unknown_items, risk_items = retrieve_unknowns_and_risks(structured_response)
+    review_summary = f"Unknown items: {len(unknown_items)}, Risks: {len(risk_items)}"
+    state["review_summary"] = review_summary
+
     return state
 
 
