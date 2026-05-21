@@ -11,11 +11,6 @@ load_dotenv()
 
 MODEL_NAME = "claude-haiku-4-5-20251001"
 
-model = init_chat_model(
-    MODEL_NAME,
-    temperature=0,
-)
-
 system_prompt = """You are an expert at decomposing short engineering tasks into a compact implementation plan.
 
 Return the final result as structured output matching the required schema.
@@ -33,8 +28,21 @@ Follow these rules:
 - Do not include `risks`; risk analysis happens in a separate workflow step after this draft is created.
 - Prefer a small number of strong items over many weak or repetitive ones."""
 
-task_decomposer_draft_agent = create_agent(
-    model,
-    system_prompt=system_prompt,
-    response_format=TaskDecomposerDraft,
-)
+_task_decomposer_draft_agent = None
+
+
+def get_task_decomposer_draft_agent():
+    global _task_decomposer_draft_agent
+
+    if _task_decomposer_draft_agent is None:
+        model = init_chat_model(
+            MODEL_NAME,
+            temperature=0,
+        )
+        _task_decomposer_draft_agent = create_agent(
+            model,
+            system_prompt=system_prompt,
+            response_format=TaskDecomposerDraft,
+        )
+
+    return _task_decomposer_draft_agent

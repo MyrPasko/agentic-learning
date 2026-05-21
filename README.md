@@ -147,6 +147,12 @@ Week 2 canonical demo set:
 .venv/bin/python -m agentic_learning.validate_task_decomposer_result
 ```
 
+- workflow-control tests:
+
+```bash
+.venv/bin/python -m unittest discover -s tests
+```
+
 - normal graph-backed decomposer run:
 
 ```bash

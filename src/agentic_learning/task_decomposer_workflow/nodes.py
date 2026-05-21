@@ -5,7 +5,7 @@ from agentic_learning.schemas.task_decomposer_result import (
     TaskDecomposerResult,
 )
 from agentic_learning.structured_task_decomposer_agent_call import (
-    task_decomposer_draft_agent,
+    get_task_decomposer_draft_agent,
 )
 from agentic_learning.task_decomposer_workflow.helpers.build_task_decomposer_graph_state import (
     build_task_decomposer_graph_state,
@@ -49,7 +49,7 @@ def run_decomposer_draft(state: TaskDecomposerState) -> TaskDecomposerState:
         )
 
     try:
-        result = task_decomposer_draft_agent.invoke(
+        result = get_task_decomposer_draft_agent().invoke(
             {"messages": [{"role": "user", "content": prompt}]}
         )
         draft_response = result["structured_response"]
