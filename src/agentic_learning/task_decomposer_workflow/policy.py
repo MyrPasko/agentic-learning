@@ -14,12 +14,19 @@ def retrieve_unknowns_and_risks(
     return unknown_items, risk_items
 
 
-def need_for_approval(
+def has_unknowns_or_risks(
     structured_response: TaskDecomposerResult,
-) -> tuple[ApprovalStatus, ReviewReason]:
+) -> tuple[bool, bool]:
     unknown_items, risk_items = retrieve_unknowns_and_risks(structured_response)
     has_unknowns = len(unknown_items) > 0
     has_high_risk = any(risk.impact == "high" for risk in risk_items)
+    return has_unknowns, has_high_risk
+
+
+def need_for_approval(
+    structured_response: TaskDecomposerResult,
+) -> tuple[ApprovalStatus, ReviewReason]:
+    has_unknowns, has_high_risk = has_unknowns_or_risks(structured_response)
 
     if has_unknowns:
         return "review_required", "Unknown items detected."

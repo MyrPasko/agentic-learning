@@ -2,10 +2,12 @@ from agentic_learning.task_decomposer_workflow.nodes import (
     build_fallback,
     read_input,
     review_output,
+    run_approval_decision,
     run_decomposer_draft,
     run_risk_analysis,
 )
 from agentic_learning.task_decomposer_workflow.routes import (
+    route_after_approval_decision,
     route_after_draft,
     route_after_risk_analysis,
 )
@@ -18,6 +20,8 @@ __all__ = [
     "review_output",
     "route_after_draft",
     "route_after_risk_analysis",
+    "route_after_approval_decision",
     "run_decomposer_draft",
     "run_risk_analysis",
+    "run_approval_decision",
 ]
