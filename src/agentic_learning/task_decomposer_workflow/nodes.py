@@ -1,8 +1,14 @@
 import json
 
-from agentic_learning.schemas.task_decomposer_result import RiskItem, TaskDecomposerResult
+from agentic_learning.schemas.task_decomposer_result import (
+    RiskItem,
+    TaskDecomposerResult,
+)
 from agentic_learning.structured_task_decomposer_agent_call import (
     task_decomposer_draft_agent,
+)
+from agentic_learning.task_decomposer_workflow.helpers.build_task_decomposer_graph_state import (
+    build_task_decomposer_graph_state,
 )
 from agentic_learning.task_decomposer_workflow.policy import (
     build_review_summary,
@@ -111,6 +117,53 @@ def run_risk_analysis(state: TaskDecomposerState) -> TaskDecomposerState:
             unknowns=draft_response.unknowns,
         )
 
+        return {
+            "prompt": prompt,
+            "draft_response": draft_response,
+            "structured_response": structured_response,
+            "tool_name": "analyze_task_risks",
+            "failure_reason": None,
+            "approval_status": None,
+            "review_reason": None,
+            "review_summary": None,
+            "used_fallback": False,
+        }
+    except Exception as error:
+        return {
+            "prompt": prompt,
+            "draft_response": draft_response,
+            "structured_response": None,
+            "tool_name": "analyze_task_risks",
+            "failure_reason": str(error),
+            "retry_count": retry_count + 1,
+            "approval_status": None,
+            "review_reason": None,
+            "review_summary": None,
+            "used_fallback": False,
+        }
+
+
+def run_approval_decision(state: TaskDecomposerState) -> TaskDecomposerState:
+    prompt = state.get("prompt")
+    draft_response = state.get("draft_response")
+    structured_response = state.get("structured_response")
+    retry_count = state.get("retry_count", 0)
+
+    if not structured_response:
+        return {
+            "prompt": prompt,
+            "draft_response": draft_response,
+            "structured_response": None,
+            "tool_name": None,
+            "failure_reason": "Structured response is missing.",
+            "retry_count": retry_count + 1,
+            "approval_status": None,
+            "review_reason": None,
+            "review_summary": None,
+            "used_fallback": False,
+        }
+
+    try:
         approval_status, review_reason = need_for_approval(structured_response)
 
         return {

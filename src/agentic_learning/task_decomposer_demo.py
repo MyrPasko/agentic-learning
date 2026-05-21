@@ -24,6 +24,13 @@ def run_graph() -> None:
         if draft_response and failure_reason
         else "skipped"
     )
+    approval_step_status = (
+        "ok"
+        if approval_status in {"approved", "review_required"}
+        else "failed"
+        if structured_response and failure_reason
+        else "skipped"
+    )
     answer = (
         structured_response.model_dump_json(indent=2)
         if structured_response
@@ -34,6 +41,7 @@ def run_graph() -> None:
     print(f"Status: {status}")
     print(f"Draft step: {draft_step_status}")
     print(f"Risk analysis step: {risk_analysis_status}")
+    print(f"Approval decision step: {approval_step_status}")
     print(f"Tool: {tool_name}")
     print(f"Answer: {answer}")
     print(f"Failure reason: {failure_reason}")
