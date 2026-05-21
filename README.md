@@ -88,10 +88,28 @@ Do not commit `.env` or real API keys.
 
 ## Run
 
+Preferred daily launcher surface:
+
+```bash
+make help
+```
+
+Most useful shortcuts:
+
+```bash
+make test
+make test-workflow
+make validate-task
+make demo-task
+make demo-task-fallback
+```
+
+The `make` targets use `./.venv/bin/python` directly. For model-backed demos they also load variables from `.env` automatically, so you do not need to re-type `export ANTHROPIC_API_KEY=...` each time.
+
 Day 1 sanity check:
 
 ```bash
-python -m agentic_learning.main
+make sanity
 ```
 
 Expected output:
@@ -103,40 +121,37 @@ Agentic learning environment is ready.
 Day 2 direct tool call demo:
 
 ```bash
-.venv/bin/python -m agentic_learning.direct_tool_call
+make demo-direct
 ```
 
 Day 2 live agent tool call demo:
 
 ```bash
-export ANTHROPIC_API_KEY="..."
-.venv/bin/python -m agentic_learning.agent_tool_call
+make demo-agent
 ```
 
 Day 3 deterministic schema validation demo:
 
 ```bash
-.venv/bin/python -m agentic_learning.validate_arithmetic_result
+make validate-arithmetic
 ```
 
 Day 3 structured output agent demo:
 
 ```bash
-export ANTHROPIC_API_KEY="..."
-.venv/bin/python -m agentic_learning.structured_agent_tool_call
+make demo-structured
 ```
 
 Day 4 and Day 6 routing plus fallback demo:
 
 ```bash
-export ANTHROPIC_API_KEY="..."
-.venv/bin/python -m agentic_learning.agent_tool_routing_demo
+make demo-routing
 ```
 
 Day 8 and Day 9 deterministic task-decomposer contract demo:
 
 ```bash
-.venv/bin/python -m agentic_learning.validate_task_decomposer_result
+make validate-task
 ```
 
 Week 2 canonical demo set:
@@ -144,34 +159,31 @@ Week 2 canonical demo set:
 - contract validation:
 
 ```bash
-.venv/bin/python -m agentic_learning.validate_task_decomposer_result
+make validate-task
 ```
 
 - workflow-control tests:
 
 ```bash
-.venv/bin/python -m unittest discover -s tests
+make test
 ```
 
 - normal graph-backed decomposer run:
 
 ```bash
-export ANTHROPIC_API_KEY="..."
-.venv/bin/python -m agentic_learning.task_decomposer_demo
+make demo-task
 ```
 
 - forced-failure retry/fallback run:
 
 ```bash
-export ANTHROPIC_API_KEY="..."
-FORCE_RISK_TOOL_FAILURE=1 .venv/bin/python -m agentic_learning.task_decomposer_demo
+make demo-task-fallback
 ```
 
 Day 8 to Day 11 direct structured task-decomposer agent path:
 
 ```bash
-export ANTHROPIC_API_KEY="..."
-.venv/bin/python -m agentic_learning.structured_task_decomposer_agent_call
+make demo-structured
 ```
 
 Day 10 structured-input source:
@@ -181,15 +193,13 @@ Day 10 structured-input source:
 Day 11 to Day 13 graph-backed task-decomposer demo:
 
 ```bash
-export ANTHROPIC_API_KEY="..."
-.venv/bin/python -m agentic_learning.task_decomposer_demo
+make demo-task
 ```
 
 Forced-failure demo for Day 13:
 
 ```bash
-export ANTHROPIC_API_KEY="..."
-FORCE_RISK_TOOL_FAILURE=1 .venv/bin/python -m agentic_learning.task_decomposer_demo
+make demo-task-fallback
 ```
 
 Expected normal Day 13 demo output includes:

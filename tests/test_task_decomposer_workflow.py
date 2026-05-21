@@ -10,6 +10,7 @@ from agentic_learning.schemas.task_decomposer_result import (
     TestIdea,
     UnknownItem,
 )
+from agentic_learning.task_decomposer_graph import task_decomposer_graph
 from agentic_learning.task_decomposer_workflow.helpers.build_task_decomposer_graph_state import (
     build_task_decomposer_graph_state,
 )
@@ -64,13 +65,15 @@ def build_risk_item(impact: str = "medium") -> RiskItem:
     )
 
 
-def build_draft() -> TaskDecomposerDraft:
+def build_draft(
+    *, unknowns: list[UnknownItem] | None = None
+) -> TaskDecomposerDraft:
     return TaskDecomposerDraft(
         original_task="Add a new portfolio endpoint with validation and tests.",
         plan_summary="Implement a narrow endpoint slice with validation and tests.",
         implementation_tasks=[build_implementation_task()],
         test_ideas=[build_test_idea()],
-        unknowns=[],
+        unknowns=unknowns if unknowns is not None else [],
     )
 
 
@@ -303,6 +306,92 @@ class TaskDecomposerWorkflowTests(unittest.TestCase):
 
         self.assertEqual(result["review_summary"], "Unknown items: 1, Risks: 1")
         self.assertEqual(result["step_outcomes"]["review"], "ok")
+
+    def test_compiled_graph_review_path_reaches_expected_final_state(self) -> None:
+        agent = Mock()
+        agent.invoke.return_value = {
+            "structured_response": build_draft(unknowns=[build_unknown_item()])
+        }
+        tool = Mock()
+        tool.invoke.return_value = json.dumps(
+            [
+                {
+                    "risk": "Insufficient validation",
+                    "impact": "medium",
+                    "mitigation": (
+                        "Validate identifiers and malformed payloads before business"
+                        " logic executes."
+                    ),
+                }
+            ]
+        )
+
+        input_file = Mock()
+        input_file.read_text.return_value = "Build the endpoint."
+
+        with patch(
+            "agentic_learning.task_decomposer_workflow.nodes.INPUT_FILE_PATH",
+            input_file,
+        ), patch(
+            "agentic_learning.task_decomposer_workflow.nodes.get_task_decomposer_draft_agent",
+            return_value=agent,
+        ), patch(
+            "agentic_learning.task_decomposer_workflow.nodes.analyze_task_risks",
+            tool,
+        ):
+            result = task_decomposer_graph.invoke({})
+
+        self.assertFalse(result["used_fallback"])
+        self.assertEqual(result["prompt"], "Build the endpoint.")
+        self.assertEqual(result["tool_name"], "analyze_task_risks")
+        self.assertEqual(result["approval_status"], "review_required")
+        self.assertEqual(result["review_reason"], "Unknown items detected.")
+        self.assertEqual(result["review_summary"], "Unknown items: 1, Risks: 1")
+        self.assertIsNotNone(result["structured_response"])
+        self.assertIsNone(result["failure_reason"])
+        self.assertEqual(result["step_outcomes"]["draft"], "ok")
+        self.assertEqual(result["step_outcomes"]["risk_analysis"], "ok")
+        self.assertEqual(result["step_outcomes"]["approval_decision"], "ok")
+        self.assertEqual(result["step_outcomes"]["review"], "ok")
+        agent.invoke.assert_called_once()
+        tool.invoke.assert_called_once_with({"task": "Build the endpoint."})
+
+    def test_compiled_graph_fallback_path_reaches_expected_final_state(self) -> None:
+        agent = Mock()
+        agent.invoke.return_value = {"structured_response": build_draft()}
+        tool = Mock()
+        tool.invoke.side_effect = RuntimeError("boom")
+
+        input_file = Mock()
+        input_file.read_text.return_value = "Build the endpoint."
+
+        with patch(
+            "agentic_learning.task_decomposer_workflow.nodes.INPUT_FILE_PATH",
+            input_file,
+        ), patch(
+            "agentic_learning.task_decomposer_workflow.nodes.get_task_decomposer_draft_agent",
+            return_value=agent,
+        ), patch(
+            "agentic_learning.task_decomposer_workflow.nodes.analyze_task_risks",
+            tool,
+        ):
+            result = task_decomposer_graph.invoke({})
+
+        self.assertTrue(result["used_fallback"])
+        self.assertEqual(result["prompt"], "Build the endpoint.")
+        self.assertEqual(result["tool_name"], "analyze_task_risks")
+        self.assertEqual(result["failure_reason"], "boom")
+        self.assertEqual(result["retry_count"], 2)
+        self.assertIsNone(result["structured_response"])
+        self.assertIsNone(result["approval_status"])
+        self.assertIsNone(result["review_reason"])
+        self.assertIsNone(result["review_summary"])
+        self.assertEqual(result["step_outcomes"]["draft"], "ok")
+        self.assertEqual(result["step_outcomes"]["risk_analysis"], "failed")
+        self.assertEqual(result["step_outcomes"]["approval_decision"], "skipped")
+        self.assertEqual(result["step_outcomes"]["review"], "skipped")
+        agent.invoke.assert_called_once()
+        self.assertEqual(tool.invoke.call_count, 2)
 
 
 if __name__ == "__main__":

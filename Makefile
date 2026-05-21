@@ -1,5 +1,5 @@
 PYTHON ?= ./.venv/bin/python
-TEST_ENV = env PYTHONDONTWRITEBYTECODE=1
+LOCAL_ENV = env PYTHONDONTWRITEBYTECODE=1 LANGSMITH_TRACING=false LANGCHAIN_TRACING_V2=false
 
 .PHONY: help install sanity test test-workflow validate-arithmetic validate-task demo-direct demo-agent demo-routing demo-structured demo-task demo-task-fallback
 
@@ -25,19 +25,19 @@ sanity:
 	$(PYTHON) -m agentic_learning.main
 
 test:
-	$(TEST_ENV) $(PYTHON) -m unittest discover -s tests
+	$(LOCAL_ENV) $(PYTHON) -m unittest discover -s tests
 
 test-workflow:
-	$(TEST_ENV) $(PYTHON) -m unittest tests.test_task_decomposer_workflow
+	$(LOCAL_ENV) $(PYTHON) -m unittest tests.test_task_decomposer_workflow
 
 validate-arithmetic:
-	$(TEST_ENV) $(PYTHON) -m agentic_learning.validate_arithmetic_result
+	$(LOCAL_ENV) $(PYTHON) -m agentic_learning.validate_arithmetic_result
 
 validate-task:
-	$(TEST_ENV) $(PYTHON) -m agentic_learning.validate_task_decomposer_result
+	$(LOCAL_ENV) $(PYTHON) -m agentic_learning.validate_task_decomposer_result
 
 demo-direct:
-	$(PYTHON) -m agentic_learning.direct_tool_call
+	$(LOCAL_ENV) $(PYTHON) -m agentic_learning.direct_tool_call
 
 demo-agent:
 	@test -f .env || { echo ".env is missing. Create it from .env.example first."; exit 1; }
