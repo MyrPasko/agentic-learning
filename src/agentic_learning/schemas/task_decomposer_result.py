@@ -82,6 +82,23 @@ class UnknownItem(BaseModel):
         return value
 
 
+class TaskDecomposerDraft(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    original_task: MediumText
+    plan_summary: MediumText
+    implementation_tasks: list[ImplementationTask] = Field(min_length=1, max_length=5)
+    test_ideas: list[TestIdea] = Field(min_length=1, max_length=5)
+    unknowns: list[UnknownItem] = Field(min_length=0, max_length=3)
+
+    @field_validator("original_task", "plan_summary", mode="before")
+    @classmethod
+    def normalize_text_fields(cls, value: object) -> object:
+        if isinstance(value, str):
+            return value.strip()
+        return value
+
+
 class TaskDecomposerResult(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
