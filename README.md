@@ -47,7 +47,7 @@ By the end of Week 1, this repo proves the following:
 - Day 9: harden the decomposer contract with nested typed items, stricter validation, trimmed input normalization, duplicate checks for `done_criteria`, and a stronger structured-output prompt.
 - Day 10: replace the hardcoded decomposer prompt with one explicit file-ingestion path that reads a sample task from `src/examples/input_backend_endpoint.md`.
 - Day 11: add one narrow `analyze_task_risks` tool path and a demo entrypoint that makes tool use visible alongside the final structured decomposition.
-- Day 12: move the Day 10-11 decomposer path into the first explicit LangGraph workflow with `read_input -> run_decomposer`, while preserving file ingestion, the structured contract, and the narrow risk-analysis tool path.
+- Day 12: move the Day 10-11 decomposer path into the first explicit LangGraph workflow, which later became the current `read_input -> run_decomposer_draft -> run_risk_analysis` path.
 - Day 13: add one forced-failure trigger for `analyze_task_risks` plus one bounded retry and fallback branch around the graph-backed decomposer run.
 
 ## Current Behavior Guarantees
@@ -201,9 +201,9 @@ Expected forced-failure Day 13 demo output includes:
 
 Current Day 13 limitation:
 
-- this slice now routes through one explicit LangGraph workflow with one bounded retry around the `run_decomposer` node before fallback;
+- this slice now routes through one explicit LangGraph workflow with separate draft-generation and risk-analysis nodes before fallback;
 - it still reads one fixed markdown task input and exposes one narrow risk-analysis tool path;
-- retry is modeled around the `run_decomposer` node, not as a separately modeled tool node;
+- retry is modeled separately for the draft-generation node and the risk-analysis node;
 - it does not support CLI-selected files, multi-source ingestion, review nodes, approval checkpoints, or multi-tool planning yet.
 
 ## Tracing
@@ -248,6 +248,6 @@ Day 10 keeps the same contract and agent prompt, but replaces the hardcoded inli
 
 Day 11 keeps the Day 10 ingestion path, adds one explicit `analyze_task_risks` tool, and introduces `task_decomposer_demo` so the repo can show both the final structured result and the tool name used during the run.
 
-Day 12 keeps the Day 11 behavior but makes the control flow explicit: `task_decomposer_graph.py` now owns a minimal LangGraph workflow where `read_input` loads the fixed markdown task and `run_decomposer` executes the structured agent, records the tool name when one is used, and returns workflow state for the demo layer to print.
+Day 12 introduced the first explicit LangGraph workflow boundary. The current version has evolved that path into `read_input -> run_decomposer_draft -> run_risk_analysis`, where the draft agent and the risk-analysis tool now live in separate workflow nodes.
 
-Day 13 keeps the Day 12 graph boundary, adds one forced-failure trigger for `analyze_task_risks`, one bounded retry before fallback, and visible retry-count evidence in the demo output so the degraded path can be exercised deliberately instead of inferred.
+Day 13 kept the graph boundary, added one forced-failure trigger for `analyze_task_risks`, one bounded retry before fallback, and visible retry-count evidence in the demo output so the degraded path could be exercised deliberately instead of inferred. The current graph keeps that degraded-path evidence while modeling the risk-analysis step as its own node.

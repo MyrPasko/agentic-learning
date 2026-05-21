@@ -5,6 +5,7 @@ def run_graph() -> None:
     result = task_decomposer_graph.invoke({})
 
     prompt = result.get("prompt")
+    draft_response = result.get("draft_response")
     structured_response = result.get("structured_response")
     tool_name = result.get("tool_name")
     failure_reason = result.get("failure_reason")
@@ -15,6 +16,14 @@ def run_graph() -> None:
     review_summary = result.get("review_summary")
 
     status = "fallback" if used_fallback else "ok"
+    draft_step_status = "ok" if draft_response else "failed"
+    risk_analysis_status = (
+        "ok"
+        if structured_response and tool_name == "analyze_task_risks"
+        else "failed"
+        if draft_response and failure_reason
+        else "skipped"
+    )
     answer = (
         structured_response.model_dump_json(indent=2)
         if structured_response
@@ -23,6 +32,8 @@ def run_graph() -> None:
 
     print(f"Prompt: {prompt}")
     print(f"Status: {status}")
+    print(f"Draft step: {draft_step_status}")
+    print(f"Risk analysis step: {risk_analysis_status}")
     print(f"Tool: {tool_name}")
     print(f"Answer: {answer}")
     print(f"Failure reason: {failure_reason}")
