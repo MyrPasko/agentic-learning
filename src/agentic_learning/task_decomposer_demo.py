@@ -14,23 +14,9 @@ def run_graph() -> None:
     approval_status = result.get("approval_status")
     review_reason = result.get("review_reason")
     review_summary = result.get("review_summary")
+    step_outcomes = result.get("step_outcomes", {})
 
     status = "fallback" if used_fallback else "ok"
-    draft_step_status = "ok" if draft_response else "failed"
-    risk_analysis_status = (
-        "ok"
-        if structured_response and tool_name == "analyze_task_risks"
-        else "failed"
-        if draft_response and failure_reason
-        else "skipped"
-    )
-    approval_step_status = (
-        "ok"
-        if approval_status in {"approved", "review_required"}
-        else "failed"
-        if structured_response and failure_reason
-        else "skipped"
-    )
     answer = (
         structured_response.model_dump_json(indent=2)
         if structured_response
@@ -39,9 +25,10 @@ def run_graph() -> None:
 
     print(f"Prompt: {prompt}")
     print(f"Status: {status}")
-    print(f"Draft step: {draft_step_status}")
-    print(f"Risk analysis step: {risk_analysis_status}")
-    print(f"Approval decision step: {approval_step_status}")
+    print(f"Draft step: {step_outcomes.get('draft')}")
+    print(f"Risk analysis step: {step_outcomes.get('risk_analysis')}")
+    print(f"Approval decision step: {step_outcomes.get('approval_decision')}")
+    print(f"Review step: {step_outcomes.get('review')}")
     print(f"Tool: {tool_name}")
     print(f"Answer: {answer}")
     print(f"Failure reason: {failure_reason}")
