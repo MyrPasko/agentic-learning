@@ -16,9 +16,17 @@ MAX_RETRY_COUNT = 1
 
 ApprovalStatus = Literal["approved", "review_required"] | None
 ReviewReason = str | None
+StepOutcome = Literal["ok", "failed", "skipped"]
 RouteAfterDraft = Literal["run_risk_analysis", "retry", "fallback"]
 RouteAfterRiskAnalysis = Literal["retry", "fallback", "approval_decision"]
 RouteAfterApprovalDecision = Literal["done", "review", "retry", "fallback"]
+
+
+class StepOutcomes(TypedDict):
+    draft: StepOutcome
+    risk_analysis: StepOutcome
+    approval_decision: StepOutcome
+    review: StepOutcome
 
 
 class TaskDecomposerState(TypedDict, total=False):
@@ -32,3 +40,4 @@ class TaskDecomposerState(TypedDict, total=False):
     approval_status: ApprovalStatus
     review_reason: ReviewReason
     review_summary: str | None
+    step_outcomes: StepOutcomes

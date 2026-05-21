@@ -190,21 +190,28 @@ Expected normal Day 13 demo output includes:
 
 - `Prompt: ...`
 - `Status: ok`
+- `Draft step: ok`
+- `Risk analysis step: ok`
+- `Approval decision step: ok`
+- `Review step: ok` or `Review step: skipped`
 - `Tool: analyze_task_risks`
 - final structured decomposition in the answer payload
 
 Expected forced-failure Day 13 demo output includes:
 
 - `Status: fallback`
+- `Risk analysis step: failed`
+- `Approval decision step: skipped`
+- `Review step: skipped`
 - `Failure reason: Forced failure for analyze_task_risks.`
 - `Retry count: 2`
 
-Current Day 13 limitation:
+Current workflow limitations:
 
-- this slice now routes through one explicit LangGraph workflow with separate draft-generation and risk-analysis nodes before fallback;
+- this slice now routes through one explicit LangGraph workflow with separate draft-generation, risk-analysis, approval-decision, and review boundaries before completion or fallback;
 - it still reads one fixed markdown task input and exposes one narrow risk-analysis tool path;
 - retry is modeled separately for the draft-generation node and the risk-analysis node;
-- it does not support CLI-selected files, multi-source ingestion, review nodes, approval checkpoints, or multi-tool planning yet.
+- it does not support CLI-selected files, multi-source ingestion, multi-tool planning, or broader review/approval policies yet.
 
 ## Tracing
 

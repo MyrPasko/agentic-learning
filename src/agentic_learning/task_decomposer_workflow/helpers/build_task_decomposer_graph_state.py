@@ -17,6 +17,12 @@ def build_task_decomposer_graph_state(
         "approval_status": None,
         "review_reason": None,
         "review_summary": None,
+        "step_outcomes": {
+            "draft": "skipped",
+            "risk_analysis": "skipped",
+            "approval_decision": "skipped",
+            "review": "skipped",
+        },
     }
     if state:
         next_state.update(state)
