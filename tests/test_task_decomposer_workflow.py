@@ -356,6 +356,53 @@ class TaskDecomposerWorkflowTests(unittest.TestCase):
         agent.invoke.assert_called_once()
         tool.invoke.assert_called_once_with({"task": "Build the endpoint."})
 
+    def test_compiled_graph_approved_path_reaches_expected_final_state(self) -> None:
+        agent = Mock()
+        agent.invoke.return_value = {"structured_response": build_draft()}
+        tool = Mock()
+        tool.invoke.return_value = json.dumps(
+            [
+                {
+                    "risk": "Insufficient validation",
+                    "impact": "medium",
+                    "mitigation": (
+                        "Validate identifiers and malformed payloads before business"
+                        " logic executes."
+                    ),
+                }
+            ]
+        )
+
+        input_file = Mock()
+        input_file.read_text.return_value = "Build the endpoint."
+
+        with patch(
+            "agentic_learning.task_decomposer_workflow.nodes.INPUT_FILE_PATH",
+            input_file,
+        ), patch(
+            "agentic_learning.task_decomposer_workflow.nodes.get_task_decomposer_draft_agent",
+            return_value=agent,
+        ), patch(
+            "agentic_learning.task_decomposer_workflow.nodes.analyze_task_risks",
+            tool,
+        ):
+            result = task_decomposer_graph.invoke({})
+
+        self.assertFalse(result["used_fallback"])
+        self.assertEqual(result["prompt"], "Build the endpoint.")
+        self.assertEqual(result["tool_name"], "analyze_task_risks")
+        self.assertEqual(result["approval_status"], "approved")
+        self.assertIsNone(result["review_reason"])
+        self.assertIsNone(result["review_summary"])
+        self.assertIsNotNone(result["structured_response"])
+        self.assertIsNone(result["failure_reason"])
+        self.assertEqual(result["step_outcomes"]["draft"], "ok")
+        self.assertEqual(result["step_outcomes"]["risk_analysis"], "ok")
+        self.assertEqual(result["step_outcomes"]["approval_decision"], "ok")
+        self.assertEqual(result["step_outcomes"]["review"], "skipped")
+        agent.invoke.assert_called_once()
+        tool.invoke.assert_called_once_with({"task": "Build the endpoint."})
+
     def test_compiled_graph_fallback_path_reaches_expected_final_state(self) -> None:
         agent = Mock()
         agent.invoke.return_value = {"structured_response": build_draft()}
