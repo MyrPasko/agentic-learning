@@ -296,6 +296,7 @@ Artifact map:
 - failure log: `artifacts/evals/task_decomposer_failure_log_v1.md`
 - short eval note: `artifacts/evals/task_decomposer_eval_note_v1.md`
 - compact workflow note: `docs/Project1_Task_Decomposer_Workflow.md`
+- prompt contracts and failure modes note: `docs/Project1_Prompt_Contracts_And_Failure_Modes.md`
 
 ## Tracing
 
