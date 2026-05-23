@@ -1,0 +1,952 @@
+{
+  "dataset_name": "task_decomposer_eval_dataset_v1",
+  "cases": [
+    {
+      "case_id": "approved-readme-introduction",
+      "tags": ["approved", "docs"],
+      "input_task": "Polish the README introduction so the project goal is clearer for new contributors.",
+      "draft_response": {
+        "original_task": "Polish the README introduction so the project goal is clearer for new contributors.",
+        "plan_summary": "Tighten the opening README copy so the repository purpose and expected audience are easier to scan.",
+        "implementation_tasks": [
+          {
+            "title": "Rewrite intro copy",
+            "description": "Rewrite the first README paragraph so the repository purpose is explicit and easier to scan quickly.",
+            "done_criteria": [
+              "The opening paragraph explains the repo purpose clearly.",
+              "The wording stays concise and avoids repeated phrases."
+            ]
+          },
+          {
+            "title": "Check README flow",
+            "description": "Review the surrounding README headings so the new introduction still connects cleanly to the next section.",
+            "done_criteria": [
+              "The updated intro still leads naturally into the next heading."
+            ]
+          }
+        ],
+        "test_ideas": [
+          {
+            "test_type": "component",
+            "scenario": "Preview the README after the introduction rewrite.",
+            "expected_behavior": "The revised opening reads clearly in markdown preview and the project goal is easy to understand."
+          }
+        ],
+        "unknowns": []
+      },
+      "expected_unknown_questions": [],
+      "expected_risk_impacts": [],
+      "expected_approval_status": "approved",
+      "expected_review_reason": null,
+      "expected_quality": {
+        "implementation_task_count": 2,
+        "test_idea_count": 1,
+        "unknown_count": 0,
+        "risk_count": 0,
+        "done_criteria_are_unique": true
+      }
+    },
+    {
+      "case_id": "approved-dashboard-spacing",
+      "tags": ["approved", "ui"],
+      "input_task": "Refine the dashboard card spacing so the summary grid feels more balanced on desktop.",
+      "draft_response": {
+        "original_task": "Refine the dashboard card spacing so the summary grid feels more balanced on desktop.",
+        "plan_summary": "Adjust the dashboard layout spacing and confirm the card rhythm remains visually consistent on desktop.",
+        "implementation_tasks": [
+          {
+            "title": "Tune grid spacing",
+            "description": "Adjust the card gap and related layout spacing so the dashboard grid looks more balanced on wide screens.",
+            "done_criteria": [
+              "Desktop card gaps are visually consistent across the grid.",
+              "The spacing change does not collapse the card layout."
+            ]
+          }
+        ],
+        "test_ideas": [
+          {
+            "test_type": "component",
+            "scenario": "Open the dashboard grid after the spacing adjustment.",
+            "expected_behavior": "Cards keep aligned edges and the desktop layout feels more balanced without overlap."
+          }
+        ],
+        "unknowns": []
+      },
+      "expected_unknown_questions": [],
+      "expected_risk_impacts": [],
+      "expected_approval_status": "approved",
+      "expected_review_reason": null,
+      "expected_quality": {
+        "implementation_task_count": 1,
+        "test_idea_count": 1,
+        "unknown_count": 0,
+        "risk_count": 0,
+        "done_criteria_are_unique": true
+      }
+    },
+    {
+      "case_id": "approved-rename-parser-helper",
+      "tags": ["approved", "refactor"],
+      "input_task": "Rename the CSV parser helper so the function purpose is clearer in import sites.",
+      "draft_response": {
+        "original_task": "Rename the CSV parser helper so the function purpose is clearer in import sites.",
+        "plan_summary": "Apply a narrow naming refactor that makes the CSV helper intent clearer without changing behavior.",
+        "implementation_tasks": [
+          {
+            "title": "Rename helper symbol",
+            "description": "Rename the parser helper and update import sites so the function name describes its responsibility better.",
+            "done_criteria": [
+              "All import sites use the new helper name consistently.",
+              "The rename does not change the helper behavior."
+            ]
+          },
+          {
+            "title": "Review nearby comments",
+            "description": "Update any nearby comments or labels that still mention the old helper name after the refactor.",
+            "done_criteria": [
+              "Outdated helper references are removed from comments and labels."
+            ]
+          }
+        ],
+        "test_ideas": [
+          {
+            "test_type": "integration",
+            "scenario": "Run the parser flow after the helper rename.",
+            "expected_behavior": "The existing parser flow still works and import sites resolve the renamed helper correctly."
+          }
+        ],
+        "unknowns": []
+      },
+      "expected_unknown_questions": [],
+      "expected_risk_impacts": [],
+      "expected_approval_status": "approved",
+      "expected_review_reason": null,
+      "expected_quality": {
+        "implementation_task_count": 2,
+        "test_idea_count": 1,
+        "unknown_count": 0,
+        "risk_count": 0,
+        "done_criteria_are_unique": true
+      }
+    },
+    {
+      "case_id": "approved-date-formatting-cleanup",
+      "tags": ["approved", "refactor"],
+      "input_task": "Simplify the date formatting helper so the output labels are easier to maintain.",
+      "draft_response": {
+        "original_task": "Simplify the date formatting helper so the output labels are easier to maintain.",
+        "plan_summary": "Reduce formatting noise in the date helper and keep the output labels consistent after the cleanup.",
+        "implementation_tasks": [
+          {
+            "title": "Reduce formatter branching",
+            "description": "Simplify the formatting helper branches so the output label rules are easier to maintain over time.",
+            "done_criteria": [
+              "The helper logic is easier to follow after the cleanup.",
+              "Formatted labels stay consistent with the current display rules."
+            ]
+          }
+        ],
+        "test_ideas": [
+          {
+            "test_type": "unit",
+            "scenario": "Format representative dates with the simplified helper.",
+            "expected_behavior": "The helper returns the same label style for the covered date examples after the cleanup."
+          }
+        ],
+        "unknowns": []
+      },
+      "expected_unknown_questions": [],
+      "expected_risk_impacts": [],
+      "expected_approval_status": "approved",
+      "expected_review_reason": null,
+      "expected_quality": {
+        "implementation_task_count": 1,
+        "test_idea_count": 1,
+        "unknown_count": 0,
+        "risk_count": 0,
+        "done_criteria_are_unique": true
+      }
+    },
+    {
+      "case_id": "approved-cli-output-copy",
+      "tags": ["approved", "cli"],
+      "input_task": "Tighten the CLI success message copy so the completion output is shorter and clearer.",
+      "draft_response": {
+        "original_task": "Tighten the CLI success message copy so the completion output is shorter and clearer.",
+        "plan_summary": "Trim the CLI success wording and verify the completion output still communicates the important outcome cleanly.",
+        "implementation_tasks": [
+          {
+            "title": "Rewrite success message",
+            "description": "Shorten the CLI success copy so it stays clear and does not bury the main completion signal.",
+            "done_criteria": [
+              "The success message is shorter without losing the main outcome.",
+              "The new copy stays consistent with the surrounding CLI tone."
+            ]
+          }
+        ],
+        "test_ideas": [
+          {
+            "test_type": "integration",
+            "scenario": "Run the CLI command that prints the success message.",
+            "expected_behavior": "The command prints the revised success copy and the result remains easy to understand."
+          }
+        ],
+        "unknowns": []
+      },
+      "expected_unknown_questions": [],
+      "expected_risk_impacts": [],
+      "expected_approval_status": "approved",
+      "expected_review_reason": null,
+      "expected_quality": {
+        "implementation_task_count": 1,
+        "test_idea_count": 1,
+        "unknown_count": 0,
+        "risk_count": 0,
+        "done_criteria_are_unique": true
+      }
+    },
+    {
+      "case_id": "approved-loading-state-classes",
+      "tags": ["approved", "ui"],
+      "input_task": "Clean up the loading state class names so the button styles are easier to read.",
+      "draft_response": {
+        "original_task": "Clean up the loading state class names so the button styles are easier to read.",
+        "plan_summary": "Rename or regroup the loading state class names so the button styling logic reads more clearly.",
+        "implementation_tasks": [
+          {
+            "title": "Simplify class names",
+            "description": "Clean up the loading state class names so the button styling conditions are easier to understand quickly.",
+            "done_criteria": [
+              "The loading state class names read more clearly in the component.",
+              "The button still renders the same visual state behavior."
+            ]
+          }
+        ],
+        "test_ideas": [
+          {
+            "test_type": "component",
+            "scenario": "Render the button in its loading state after the cleanup.",
+            "expected_behavior": "The button still shows the intended loading presentation after the class name cleanup."
+          }
+        ],
+        "unknowns": []
+      },
+      "expected_unknown_questions": [],
+      "expected_risk_impacts": [],
+      "expected_approval_status": "approved",
+      "expected_review_reason": null,
+      "expected_quality": {
+        "implementation_task_count": 1,
+        "test_idea_count": 1,
+        "unknown_count": 0,
+        "risk_count": 0,
+        "done_criteria_are_unique": true
+      }
+    },
+    {
+      "case_id": "risk-only-billing-export-tests",
+      "tags": ["review", "risk-only", "tests"],
+      "input_task": "Add regression tests for the billing export CSV parser before the next release.",
+      "draft_response": {
+        "original_task": "Add regression tests for the billing export CSV parser before the next release.",
+        "plan_summary": "Add a focused regression test slice around the billing export parser so release risk is reduced.",
+        "implementation_tasks": [
+          {
+            "title": "Identify parser cases",
+            "description": "List the most important billing export parser scenarios that need regression coverage before release.",
+            "done_criteria": [
+              "The critical billing export parser scenarios are identified clearly.",
+              "The selected cases cover the highest-value parser behavior."
+            ]
+          },
+          {
+            "title": "Add regression coverage",
+            "description": "Implement regression coverage for the parser scenarios that are most likely to break during release work.",
+            "done_criteria": [
+              "The target parser scenarios are covered by automated tests."
+            ]
+          }
+        ],
+        "test_ideas": [
+          {
+            "test_type": "integration",
+            "scenario": "Run the billing export parser against known regression fixtures.",
+            "expected_behavior": "The parser handles covered regression fixtures consistently and exposes failures clearly."
+          },
+          {
+            "test_type": "unit",
+            "scenario": "Exercise focused parser edge cases with direct assertions.",
+            "expected_behavior": "The parser edge cases return the expected values or failure signals under direct assertions."
+          }
+        ],
+        "unknowns": []
+      },
+      "expected_unknown_questions": [],
+      "expected_risk_impacts": ["high", "high", "medium", "medium"],
+      "expected_approval_status": "review_required",
+      "expected_review_reason": "At least one risk item is high.",
+      "expected_quality": {
+        "implementation_task_count": 2,
+        "test_idea_count": 2,
+        "unknown_count": 0,
+        "risk_count": 4,
+        "done_criteria_are_unique": true
+      }
+    },
+    {
+      "case_id": "risk-only-markdown-renderer-tests",
+      "tags": ["review", "risk-only", "tests"],
+      "input_task": "Add smoke tests for the markdown renderer so recent formatting fixes stay protected.",
+      "draft_response": {
+        "original_task": "Add smoke tests for the markdown renderer so recent formatting fixes stay protected.",
+        "plan_summary": "Introduce a small smoke-test layer for the markdown renderer to guard against regressions in formatting fixes.",
+        "implementation_tasks": [
+          {
+            "title": "Choose smoke scenarios",
+            "description": "Select a small set of markdown rendering scenarios that best protect the recent formatting fixes.",
+            "done_criteria": [
+              "The selected scenarios reflect the recent formatting fixes accurately."
+            ]
+          },
+          {
+            "title": "Add smoke assertions",
+            "description": "Implement smoke assertions for the selected renderer scenarios so regressions surface quickly.",
+            "done_criteria": [
+              "The smoke assertions fail clearly when rendering behavior changes.",
+              "The covered scenarios remain narrow and easy to maintain."
+            ]
+          }
+        ],
+        "test_ideas": [
+          {
+            "test_type": "integration",
+            "scenario": "Render representative markdown samples in the smoke suite.",
+            "expected_behavior": "The renderer preserves the expected formatting for the covered smoke samples."
+          }
+        ],
+        "unknowns": []
+      },
+      "expected_unknown_questions": [],
+      "expected_risk_impacts": ["high", "high", "medium", "medium"],
+      "expected_approval_status": "review_required",
+      "expected_review_reason": "At least one risk item is high.",
+      "expected_quality": {
+        "implementation_task_count": 2,
+        "test_idea_count": 1,
+        "unknown_count": 0,
+        "risk_count": 4,
+        "done_criteria_are_unique": true
+      }
+    },
+    {
+      "case_id": "risk-only-pagination-tests",
+      "tags": ["review", "risk-only", "tests"],
+      "input_task": "Expand tests around the pagination helper so edge pages do not regress again.",
+      "draft_response": {
+        "original_task": "Expand tests around the pagination helper so edge pages do not regress again.",
+        "plan_summary": "Grow pagination test coverage around the edge-page behavior that recently regressed.",
+        "implementation_tasks": [
+          {
+            "title": "Map edge-page cases",
+            "description": "Identify the pagination edge-page cases that are most likely to regress without targeted coverage.",
+            "done_criteria": [
+              "Edge-page cases are listed and scoped before test updates."
+            ]
+          },
+          {
+            "title": "Add helper coverage",
+            "description": "Add test coverage around the pagination helper so edge pages keep the expected behavior.",
+            "done_criteria": [
+              "The new coverage exercises the identified edge-page cases.",
+              "Failures are easy to read when pagination output changes."
+            ]
+          }
+        ],
+        "test_ideas": [
+          {
+            "test_type": "unit",
+            "scenario": "Evaluate pagination helper outputs for first and last pages.",
+            "expected_behavior": "The helper returns the expected edge-page values for the covered pagination cases."
+          }
+        ],
+        "unknowns": []
+      },
+      "expected_unknown_questions": [],
+      "expected_risk_impacts": ["high", "high", "medium", "medium"],
+      "expected_approval_status": "review_required",
+      "expected_review_reason": "At least one risk item is high.",
+      "expected_quality": {
+        "implementation_task_count": 2,
+        "test_idea_count": 1,
+        "unknown_count": 0,
+        "risk_count": 4,
+        "done_criteria_are_unique": true
+      }
+    },
+    {
+      "case_id": "risk-only-search-ranking-tests",
+      "tags": ["review", "risk-only", "tests"],
+      "input_task": "Add focused tests for the search ranking helper to catch score ordering regressions.",
+      "draft_response": {
+        "original_task": "Add focused tests for the search ranking helper to catch score ordering regressions.",
+        "plan_summary": "Add a focused ranking-test slice so score ordering regressions are easier to catch before release.",
+        "implementation_tasks": [
+          {
+            "title": "Choose ranking fixtures",
+            "description": "Select representative ranking fixtures that expose the score ordering regressions we need to catch.",
+            "done_criteria": [
+              "The fixtures cover the most relevant ranking edge cases."
+            ]
+          },
+          {
+            "title": "Assert ordering behavior",
+            "description": "Add direct assertions around the ranking order so regressions are visible instead of inferred.",
+            "done_criteria": [
+              "Ranking-order regressions fail with readable assertions."
+            ]
+          }
+        ],
+        "test_ideas": [
+          {
+            "test_type": "unit",
+            "scenario": "Rank representative search fixtures with the focused test cases.",
+            "expected_behavior": "The ranking helper keeps the expected score order for the covered search fixtures."
+          }
+        ],
+        "unknowns": []
+      },
+      "expected_unknown_questions": [],
+      "expected_risk_impacts": ["high", "high", "medium", "medium"],
+      "expected_approval_status": "review_required",
+      "expected_review_reason": "At least one risk item is high.",
+      "expected_quality": {
+        "implementation_task_count": 2,
+        "test_idea_count": 1,
+        "unknown_count": 0,
+        "risk_count": 4,
+        "done_criteria_are_unique": true
+      }
+    },
+    {
+      "case_id": "validation-portfolio-endpoint",
+      "tags": ["review", "validation", "api"],
+      "input_task": "Add a portfolio endpoint with validation for malformed request payloads and stable error output.",
+      "draft_response": {
+        "original_task": "Add a portfolio endpoint with validation for malformed request payloads and stable error output.",
+        "plan_summary": "Implement a narrow portfolio endpoint slice with request validation and a predictable error contract.",
+        "implementation_tasks": [
+          {
+            "title": "Define endpoint contract",
+            "description": "Define the portfolio endpoint request and response contract before implementation starts.",
+            "done_criteria": [
+              "The endpoint route and method are documented clearly.",
+              "The success and failure payload shapes are both defined."
+            ]
+          },
+          {
+            "title": "Implement request validation",
+            "description": "Validate malformed portfolio request payloads before the endpoint business logic continues.",
+            "done_criteria": [
+              "Malformed payloads are rejected consistently.",
+              "Validation failures return one stable error shape."
+            ]
+          }
+        ],
+        "test_ideas": [
+          {
+            "test_type": "integration",
+            "scenario": "Send valid and malformed requests to the portfolio endpoint.",
+            "expected_behavior": "Valid requests succeed and malformed requests return the documented validation error contract."
+          }
+        ],
+        "unknowns": []
+      },
+      "expected_unknown_questions": [
+        "What validation rules and payload constraints are required?"
+      ],
+      "expected_risk_impacts": ["high", "high", "medium", "medium"],
+      "expected_approval_status": "review_required",
+      "expected_review_reason": "Unknown items detected.",
+      "expected_quality": {
+        "implementation_task_count": 2,
+        "test_idea_count": 1,
+        "unknown_count": 1,
+        "risk_count": 4,
+        "done_criteria_are_unique": true
+      }
+    },
+    {
+      "case_id": "validation-api-payload-cleanup",
+      "tags": ["review", "validation", "api"],
+      "input_task": "Update the public API payload validation so optional fields are normalized consistently.",
+      "draft_response": {
+        "original_task": "Update the public API payload validation so optional fields are normalized consistently.",
+        "plan_summary": "Tighten the API payload validation and normalization rules so optional fields behave consistently.",
+        "implementation_tasks": [
+          {
+            "title": "Clarify field rules",
+            "description": "Document the optional-field normalization rules so the API payload behavior is explicit before changes.",
+            "done_criteria": [
+              "Optional-field normalization rules are described clearly."
+            ]
+          },
+          {
+            "title": "Adjust validation flow",
+            "description": "Update the validation path so optional fields are normalized consistently across the API payload.",
+            "done_criteria": [
+              "Optional fields are normalized the same way across the payload.",
+              "Validation behavior remains predictable after the update."
+            ]
+          }
+        ],
+        "test_ideas": [
+          {
+            "test_type": "integration",
+            "scenario": "Send payloads with different optional field shapes to the API.",
+            "expected_behavior": "The API applies the documented normalization rules consistently for the covered payloads."
+          }
+        ],
+        "unknowns": []
+      },
+      "expected_unknown_questions": [
+        "What validation rules and payload constraints are required?"
+      ],
+      "expected_risk_impacts": ["high", "high", "medium", "medium"],
+      "expected_approval_status": "review_required",
+      "expected_review_reason": "Unknown items detected.",
+      "expected_quality": {
+        "implementation_task_count": 2,
+        "test_idea_count": 1,
+        "unknown_count": 1,
+        "risk_count": 4,
+        "done_criteria_are_unique": true
+      }
+    },
+    {
+      "case_id": "validation-bulk-import-endpoint",
+      "tags": ["review", "validation", "api"],
+      "input_task": "Create a bulk import endpoint and validate row payloads before processing starts.",
+      "draft_response": {
+        "original_task": "Create a bulk import endpoint and validate row payloads before processing starts.",
+        "plan_summary": "Add a narrow bulk import endpoint that validates incoming row payloads before processing work begins.",
+        "implementation_tasks": [
+          {
+            "title": "Define import contract",
+            "description": "Define the bulk import endpoint contract so accepted row payload shape is explicit before coding.",
+            "done_criteria": [
+              "The accepted row payload shape is described clearly.",
+              "The endpoint success and failure responses are defined."
+            ]
+          },
+          {
+            "title": "Validate import rows",
+            "description": "Validate incoming bulk import row payloads before processing starts to prevent partial failures.",
+            "done_criteria": [
+              "Invalid row payloads fail before processing begins.",
+              "Validation errors point to the failing row input clearly."
+            ]
+          }
+        ],
+        "test_ideas": [
+          {
+            "test_type": "integration",
+            "scenario": "Submit valid and invalid bulk import requests to the endpoint.",
+            "expected_behavior": "The endpoint accepts valid rows and rejects invalid rows with the documented validation response."
+          }
+        ],
+        "unknowns": []
+      },
+      "expected_unknown_questions": [
+        "What validation rules and payload constraints are required?"
+      ],
+      "expected_risk_impacts": ["high", "high", "medium", "medium"],
+      "expected_approval_status": "review_required",
+      "expected_review_reason": "Unknown items detected.",
+      "expected_quality": {
+        "implementation_task_count": 2,
+        "test_idea_count": 1,
+        "unknown_count": 1,
+        "risk_count": 4,
+        "done_criteria_are_unique": true
+      }
+    },
+    {
+      "case_id": "validation-form-schema-rules",
+      "tags": ["review", "validation", "schema"],
+      "input_task": "Tighten the form schema validation so invalid payload combinations are rejected earlier.",
+      "draft_response": {
+        "original_task": "Tighten the form schema validation so invalid payload combinations are rejected earlier.",
+        "plan_summary": "Strengthen the form schema validation so invalid field combinations fail earlier and more clearly.",
+        "implementation_tasks": [
+          {
+            "title": "List invalid combinations",
+            "description": "Identify the invalid field combinations that the form schema should reject earlier in the flow.",
+            "done_criteria": [
+              "The invalid field combinations are documented before the schema change."
+            ]
+          },
+          {
+            "title": "Update schema checks",
+            "description": "Adjust the schema validation so invalid field combinations are rejected before deeper processing occurs.",
+            "done_criteria": [
+              "Invalid field combinations fail at the schema boundary.",
+              "The new validation errors stay readable to the caller."
+            ]
+          }
+        ],
+        "test_ideas": [
+          {
+            "test_type": "unit",
+            "scenario": "Validate the form schema with covered invalid field combinations.",
+            "expected_behavior": "The schema rejects covered invalid combinations early and returns the expected failure information."
+          }
+        ],
+        "unknowns": []
+      },
+      "expected_unknown_questions": [
+        "What validation rules and payload constraints are required?"
+      ],
+      "expected_risk_impacts": ["high", "high", "medium", "medium"],
+      "expected_approval_status": "review_required",
+      "expected_review_reason": "Unknown items detected.",
+      "expected_quality": {
+        "implementation_task_count": 2,
+        "test_idea_count": 1,
+        "unknown_count": 1,
+        "risk_count": 4,
+        "done_criteria_are_unique": true
+      }
+    },
+    {
+      "case_id": "auth-admin-role-guard",
+      "tags": ["review", "auth"],
+      "input_task": "Add an admin role guard so only privileged users can delete archived invoices.",
+      "draft_response": {
+        "original_task": "Add an admin role guard so only privileged users can delete archived invoices.",
+        "plan_summary": "Introduce an admin-only guard around invoice deletion and keep the authorization behavior explicit.",
+        "implementation_tasks": [
+          {
+            "title": "Define authorization rule",
+            "description": "Describe the admin-only deletion rule before adding the guard so the intended access behavior is explicit.",
+            "done_criteria": [
+              "The allowed and denied invoice deletion behavior is documented."
+            ]
+          },
+          {
+            "title": "Apply role guard",
+            "description": "Add the role guard around archived invoice deletion so only privileged users can trigger the action.",
+            "done_criteria": [
+              "Privileged users can delete archived invoices through the guarded path.",
+              "Non-privileged users are denied through the expected failure path."
+            ]
+          }
+        ],
+        "test_ideas": [
+          {
+            "test_type": "integration",
+            "scenario": "Attempt archived invoice deletion as privileged and non-privileged users.",
+            "expected_behavior": "Only privileged users succeed and denied users receive the expected authorization failure."
+          }
+        ],
+        "unknowns": []
+      },
+      "expected_unknown_questions": [
+        "What authorization rule applies to this task?"
+      ],
+      "expected_risk_impacts": ["high", "high", "medium", "medium"],
+      "expected_approval_status": "review_required",
+      "expected_review_reason": "Unknown items detected.",
+      "expected_quality": {
+        "implementation_task_count": 2,
+        "test_idea_count": 1,
+        "unknown_count": 1,
+        "risk_count": 4,
+        "done_criteria_are_unique": true
+      }
+    },
+    {
+      "case_id": "auth-session-permissions",
+      "tags": ["review", "auth"],
+      "input_task": "Update session permissions so support agents can view refund details without edit access.",
+      "draft_response": {
+        "original_task": "Update session permissions so support agents can view refund details without edit access.",
+        "plan_summary": "Adjust session permissions so support agents can view refund details while edit access stays restricted.",
+        "implementation_tasks": [
+          {
+            "title": "Clarify support access",
+            "description": "Define the allowed support-agent access to refund details before changing the session permission flow.",
+            "done_criteria": [
+              "Read-only and edit permissions are both described clearly."
+            ]
+          },
+          {
+            "title": "Adjust permission checks",
+            "description": "Update the session permission checks so support agents can view refund details without edit access.",
+            "done_criteria": [
+              "Support agents can view refund details through the intended path.",
+              "Edit access remains restricted to the current privileged users."
+            ]
+          }
+        ],
+        "test_ideas": [
+          {
+            "test_type": "integration",
+            "scenario": "Open refund details with support and privileged sessions.",
+            "expected_behavior": "Support sessions can view details while edit actions remain blocked for non-privileged users."
+          }
+        ],
+        "unknowns": []
+      },
+      "expected_unknown_questions": [
+        "What authorization rule applies to this task?"
+      ],
+      "expected_risk_impacts": ["high", "high", "medium", "medium"],
+      "expected_approval_status": "review_required",
+      "expected_review_reason": "Unknown items detected.",
+      "expected_quality": {
+        "implementation_task_count": 2,
+        "test_idea_count": 1,
+        "unknown_count": 1,
+        "risk_count": 4,
+        "done_criteria_are_unique": true
+      }
+    },
+    {
+      "case_id": "auth-token-ownership-check",
+      "tags": ["review", "auth"],
+      "input_task": "Add an ownership check so a token can update only the profile it belongs to.",
+      "draft_response": {
+        "original_task": "Add an ownership check so a token can update only the profile it belongs to.",
+        "plan_summary": "Add an ownership check around profile updates so token access stays limited to the correct profile.",
+        "implementation_tasks": [
+          {
+            "title": "Define ownership rule",
+            "description": "Describe the token ownership rule for profile updates before changing the authorization path.",
+            "done_criteria": [
+              "The allowed ownership rule is written down before implementation."
+            ]
+          },
+          {
+            "title": "Enforce update restriction",
+            "description": "Enforce the ownership check so a token cannot update a profile outside its allowed scope.",
+            "done_criteria": [
+              "A token can update only the profile it owns.",
+              "Unauthorized update attempts are rejected consistently."
+            ]
+          }
+        ],
+        "test_ideas": [
+          {
+            "test_type": "integration",
+            "scenario": "Update profiles with owned and non-owned tokens.",
+            "expected_behavior": "Owned tokens succeed and non-owned tokens are rejected through the expected authorization path."
+          }
+        ],
+        "unknowns": []
+      },
+      "expected_unknown_questions": [
+        "What authorization rule applies to this task?"
+      ],
+      "expected_risk_impacts": ["high", "high", "medium", "medium"],
+      "expected_approval_status": "review_required",
+      "expected_review_reason": "Unknown items detected.",
+      "expected_quality": {
+        "implementation_task_count": 2,
+        "test_idea_count": 1,
+        "unknown_count": 1,
+        "risk_count": 4,
+        "done_criteria_are_unique": true
+      }
+    },
+    {
+      "case_id": "dependency-database-migration",
+      "tags": ["review", "dependency"],
+      "input_task": "Prepare the user status database migration so the legacy flag can be retired safely.",
+      "draft_response": {
+        "original_task": "Prepare the user status database migration so the legacy flag can be retired safely.",
+        "plan_summary": "Prepare a narrow database migration slice so the legacy user status flag can be removed safely.",
+        "implementation_tasks": [
+          {
+            "title": "Define migration intent",
+            "description": "Describe the target user status shape before the database migration is applied to legacy data.",
+            "done_criteria": [
+              "The migration intent and target status shape are both described."
+            ]
+          },
+          {
+            "title": "Plan migration sequence",
+            "description": "Plan the migration sequence so legacy user status data can be retired without breaking downstream behavior.",
+            "done_criteria": [
+              "The migration sequence identifies the main data-change steps.",
+              "The sequence includes a safe rollout order for the change."
+            ]
+          }
+        ],
+        "test_ideas": [
+          {
+            "test_type": "integration",
+            "scenario": "Apply the migration against representative legacy status data.",
+            "expected_behavior": "The migration updates the covered legacy status data without losing the intended state information."
+          }
+        ],
+        "unknowns": []
+      },
+      "expected_unknown_questions": [
+        "What external dependency or persistence constraint exists here?"
+      ],
+      "expected_risk_impacts": [],
+      "expected_approval_status": "review_required",
+      "expected_review_reason": "Unknown items detected.",
+      "expected_quality": {
+        "implementation_task_count": 2,
+        "test_idea_count": 1,
+        "unknown_count": 1,
+        "risk_count": 0,
+        "done_criteria_are_unique": true
+      }
+    },
+    {
+      "case_id": "dependency-queue-retry-tuning",
+      "tags": ["review", "dependency"],
+      "input_task": "Tune the retry queue delay so failed invoice jobs do not flood downstream workers.",
+      "draft_response": {
+        "original_task": "Tune the retry queue delay so failed invoice jobs do not flood downstream workers.",
+        "plan_summary": "Adjust the retry queue timing so failed invoice jobs back off more safely before downstream work resumes.",
+        "implementation_tasks": [
+          {
+            "title": "Inspect queue timing",
+            "description": "Review the current retry queue delay behavior before tuning the backoff for failed invoice jobs.",
+            "done_criteria": [
+              "The current retry delay behavior is understood before changes start."
+            ]
+          },
+          {
+            "title": "Adjust retry delay",
+            "description": "Tune the retry queue delay so failed invoice jobs back off without flooding downstream workers.",
+            "done_criteria": [
+              "Failed invoice jobs wait longer before retrying.",
+              "Downstream workers are not flooded by immediate retries."
+            ]
+          }
+        ],
+        "test_ideas": [
+          {
+            "test_type": "integration",
+            "scenario": "Trigger representative failed invoice jobs through the retry queue.",
+            "expected_behavior": "Failed jobs back off according to the tuned delay and downstream workers stay protected."
+          }
+        ],
+        "unknowns": []
+      },
+      "expected_unknown_questions": [
+        "What external dependency or persistence constraint exists here?"
+      ],
+      "expected_risk_impacts": [],
+      "expected_approval_status": "review_required",
+      "expected_review_reason": "Unknown items detected.",
+      "expected_quality": {
+        "implementation_task_count": 2,
+        "test_idea_count": 1,
+        "unknown_count": 1,
+        "risk_count": 0,
+        "done_criteria_are_unique": true
+      }
+    },
+    {
+      "case_id": "mixed-auth-endpoint-ownership",
+      "tags": ["review", "auth", "validation", "api"],
+      "input_task": "Add an endpoint so account owners can update billing contacts with role-based access control.",
+      "draft_response": {
+        "original_task": "Add an endpoint so account owners can update billing contacts with role-based access control.",
+        "plan_summary": "Add a billing contact endpoint with explicit account-owner access rules and a clear request contract.",
+        "implementation_tasks": [
+          {
+            "title": "Define access contract",
+            "description": "Define the account-owner update rule and the endpoint request contract before implementation begins.",
+            "done_criteria": [
+              "The ownership rule and endpoint contract are both documented clearly."
+            ]
+          },
+          {
+            "title": "Implement guarded update path",
+            "description": "Implement the billing contact update path so role-based access control and request handling stay explicit.",
+            "done_criteria": [
+              "Owners can update billing contacts through the guarded endpoint.",
+              "Unauthorized users are rejected through the expected path."
+            ]
+          }
+        ],
+        "test_ideas": [
+          {
+            "test_type": "integration",
+            "scenario": "Call the billing contact endpoint as owners and non-owners.",
+            "expected_behavior": "Owners succeed and non-owners are rejected while the endpoint contract remains stable."
+          }
+        ],
+        "unknowns": []
+      },
+      "expected_unknown_questions": [
+        "What authorization rule applies to this task?",
+        "What validation rules and payload constraints are required?"
+      ],
+      "expected_risk_impacts": ["high", "high", "medium", "medium"],
+      "expected_approval_status": "review_required",
+      "expected_review_reason": "Unknown items detected.",
+      "expected_quality": {
+        "implementation_task_count": 2,
+        "test_idea_count": 1,
+        "unknown_count": 2,
+        "risk_count": 4,
+        "done_criteria_are_unique": true
+      }
+    },
+    {
+      "case_id": "mixed-api-database-import",
+      "tags": ["review", "validation", "dependency", "api"],
+      "input_task": "Create an API import job that validates payload rows before writing records to the database.",
+      "draft_response": {
+        "original_task": "Create an API import job that validates payload rows before writing records to the database.",
+        "plan_summary": "Add an API import slice with clear row validation rules before records are written to the database.",
+        "implementation_tasks": [
+          {
+            "title": "Define import rules",
+            "description": "Define the import payload rules and the write expectations before the API import job is implemented.",
+            "done_criteria": [
+              "The import payload and write expectations are documented clearly."
+            ]
+          },
+          {
+            "title": "Validate before writes",
+            "description": "Validate import rows before database writes start so bad payloads do not leak into persisted records.",
+            "done_criteria": [
+              "Invalid rows fail before database writes begin.",
+              "The write path runs only for rows that pass validation."
+            ]
+          }
+        ],
+        "test_ideas": [
+          {
+            "test_type": "integration",
+            "scenario": "Submit valid and invalid rows through the API import flow.",
+            "expected_behavior": "Valid rows reach the database write path and invalid rows stop at the documented validation boundary."
+          }
+        ],
+        "unknowns": []
+      },
+      "expected_unknown_questions": [
+        "What validation rules and payload constraints are required?",
+        "What external dependency or persistence constraint exists here?"
+      ],
+      "expected_risk_impacts": ["high", "high", "medium", "medium"],
+      "expected_approval_status": "review_required",
+      "expected_review_reason": "Unknown items detected.",
+      "expected_quality": {
+        "implementation_task_count": 2,
+        "test_idea_count": 1,
+        "unknown_count": 2,
+        "risk_count": 4,
+        "done_criteria_are_unique": true
+      }
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 PYTHON ?= ./.venv/bin/python
 LOCAL_ENV = env PYTHONDONTWRITEBYTECODE=1 LANGSMITH_TRACING=false LANGCHAIN_TRACING_V2=false
 
-.PHONY: help install sanity test test-workflow validate-arithmetic validate-task demo-direct demo-agent demo-routing demo-structured demo-task demo-task-fallback
+.PHONY: help install sanity test test-workflow validate-arithmetic validate-task validate-task-eval-dataset demo-direct demo-agent demo-routing demo-structured demo-task demo-task-fallback
 
 help:
 	@printf "Available targets:\n"
@@ -11,6 +11,7 @@ help:
 	@printf "  make test-workflow        Run only the workflow test module.\n"
 	@printf "  make validate-arithmetic  Run the arithmetic schema validator.\n"
 	@printf "  make validate-task        Run the task-decomposer validator.\n"
+	@printf "  make validate-task-eval-dataset  Run the task-decomposer eval dataset validator.\n"
 	@printf "  make demo-direct          Run the direct tool call demo.\n"
 	@printf "  make demo-agent           Run the Day 2 live tool-call demo.\n"
 	@printf "  make demo-routing         Run the routing plus fallback demo.\n"
@@ -35,6 +36,9 @@ validate-arithmetic:
 
 validate-task:
 	$(LOCAL_ENV) $(PYTHON) -m agentic_learning.validate_task_decomposer_result
+
+validate-task-eval-dataset:
+	$(LOCAL_ENV) $(PYTHON) -m agentic_learning.validate_task_decomposer_eval_dataset
 
 demo-direct:
 	$(LOCAL_ENV) $(PYTHON) -m agentic_learning.direct_tool_call
