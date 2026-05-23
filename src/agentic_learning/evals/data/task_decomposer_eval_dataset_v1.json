@@ -35,14 +35,14 @@
         "unknowns": []
       },
       "expected_unknown_questions": [],
-      "expected_risk_impacts": [],
+      "expected_risk_impacts": ["medium"],
       "expected_approval_status": "approved",
       "expected_review_reason": null,
       "expected_quality": {
         "implementation_task_count": 2,
         "test_idea_count": 1,
         "unknown_count": 0,
-        "risk_count": 0,
+        "risk_count": 1,
         "done_criteria_are_unique": true
       }
     },
@@ -73,14 +73,14 @@
         "unknowns": []
       },
       "expected_unknown_questions": [],
-      "expected_risk_impacts": [],
+      "expected_risk_impacts": ["medium"],
       "expected_approval_status": "approved",
       "expected_review_reason": null,
       "expected_quality": {
         "implementation_task_count": 1,
         "test_idea_count": 1,
         "unknown_count": 0,
-        "risk_count": 0,
+        "risk_count": 1,
         "done_criteria_are_unique": true
       }
     },
@@ -118,14 +118,14 @@
         "unknowns": []
       },
       "expected_unknown_questions": [],
-      "expected_risk_impacts": [],
+      "expected_risk_impacts": ["medium"],
       "expected_approval_status": "approved",
       "expected_review_reason": null,
       "expected_quality": {
         "implementation_task_count": 2,
         "test_idea_count": 1,
         "unknown_count": 0,
-        "risk_count": 0,
+        "risk_count": 1,
         "done_criteria_are_unique": true
       }
     },
@@ -156,14 +156,14 @@
         "unknowns": []
       },
       "expected_unknown_questions": [],
-      "expected_risk_impacts": [],
+      "expected_risk_impacts": ["medium"],
       "expected_approval_status": "approved",
       "expected_review_reason": null,
       "expected_quality": {
         "implementation_task_count": 1,
         "test_idea_count": 1,
         "unknown_count": 0,
-        "risk_count": 0,
+        "risk_count": 1,
         "done_criteria_are_unique": true
       }
     },
@@ -194,14 +194,14 @@
         "unknowns": []
       },
       "expected_unknown_questions": [],
-      "expected_risk_impacts": [],
+      "expected_risk_impacts": ["medium"],
       "expected_approval_status": "approved",
       "expected_review_reason": null,
       "expected_quality": {
         "implementation_task_count": 1,
         "test_idea_count": 1,
         "unknown_count": 0,
-        "risk_count": 0,
+        "risk_count": 1,
         "done_criteria_are_unique": true
       }
     },
@@ -232,14 +232,14 @@
         "unknowns": []
       },
       "expected_unknown_questions": [],
-      "expected_risk_impacts": [],
+      "expected_risk_impacts": ["medium"],
       "expected_approval_status": "approved",
       "expected_review_reason": null,
       "expected_quality": {
         "implementation_task_count": 1,
         "test_idea_count": 1,
         "unknown_count": 0,
-        "risk_count": 0,
+        "risk_count": 1,
         "done_criteria_are_unique": true
       }
     },
@@ -794,14 +794,14 @@
       "expected_unknown_questions": [
         "What external dependency or persistence constraint exists here?"
       ],
-      "expected_risk_impacts": [],
+      "expected_risk_impacts": ["medium"],
       "expected_approval_status": "review_required",
       "expected_review_reason": "Unknown items detected.",
       "expected_quality": {
         "implementation_task_count": 2,
         "test_idea_count": 1,
         "unknown_count": 1,
-        "risk_count": 0,
+        "risk_count": 1,
         "done_criteria_are_unique": true
       }
     },
@@ -841,14 +841,14 @@
       "expected_unknown_questions": [
         "What external dependency or persistence constraint exists here?"
       ],
-      "expected_risk_impacts": [],
+      "expected_risk_impacts": ["medium"],
       "expected_approval_status": "review_required",
       "expected_review_reason": "Unknown items detected.",
       "expected_quality": {
         "implementation_task_count": 2,
         "test_idea_count": 1,
         "unknown_count": 1,
-        "risk_count": 0,
+        "risk_count": 1,
         "done_criteria_are_unique": true
       }
     },

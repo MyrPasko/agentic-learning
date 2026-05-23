@@ -102,6 +102,7 @@ make test
 make test-workflow
 make validate-task
 make validate-task-eval-dataset
+make eval-task
 make demo-task
 make demo-task-fallback
 ```
@@ -176,6 +177,12 @@ make test
 make validate-task-eval-dataset
 ```
 
+- deterministic eval runner plus JSON summary:
+
+```bash
+make eval-task
+```
+
 - normal graph-backed decomposer run:
 
 ```bash
@@ -239,6 +246,7 @@ Current workflow limitations:
 - retry is modeled separately for the draft-generation node and the risk-analysis node;
 - it does not support CLI-selected files, multi-source ingestion, multi-tool planning, or broader review/approval policies yet.
 - the first eval artifact is a deterministic local dataset at `src/agentic_learning/evals/data/task_decomposer_eval_dataset_v1.json`; it stores draft fixtures plus expected unknown, risk, approval, and quality signals so evaluation can stay reproducible without depending on live model output.
+- the deterministic eval runner writes `artifacts/evals/task_decomposer_eval_summary_v1.json` by invoking the real compiled graph against dataset-provided draft, unknown, and risk fixtures, so graph/policy behavior stays reproducible without live model drift or keyword-heuristic coupling.
 
 ## Tracing
 
