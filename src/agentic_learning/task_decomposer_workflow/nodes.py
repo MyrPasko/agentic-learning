@@ -3,6 +3,7 @@ import json
 from agentic_learning.schemas.task_decomposer_result import (
     RiskItem,
     TaskDecomposerResult,
+    UnknownItem,
 )
 from agentic_learning.structured_task_decomposer_agent_call import (
     get_task_decomposer_draft_agent,
@@ -19,6 +20,7 @@ from agentic_learning.task_decomposer_workflow.state import (
     TaskDecomposerState,
 )
 from agentic_learning.tools.analyze_task_risks import analyze_task_risks
+from agentic_learning.tools.analyze_task_unknowns import analyze_task_unknowns
 
 
 def read_input(_: TaskDecomposerState) -> TaskDecomposerState:
@@ -34,6 +36,7 @@ def run_decomposer_draft(state: TaskDecomposerState) -> TaskDecomposerState:
         return build_task_decomposer_graph_state(
             state,
             draft_response=None,
+            unknowns=[],
             structured_response=None,
             tool_name=None,
             failure_reason="Prompt is missing.",
@@ -58,6 +61,7 @@ def run_decomposer_draft(state: TaskDecomposerState) -> TaskDecomposerState:
             state,
             prompt=prompt,
             draft_response=draft_response,
+            unknowns=[],
             structured_response=None,
             tool_name=None,
             failure_reason=None,
@@ -68,6 +72,7 @@ def run_decomposer_draft(state: TaskDecomposerState) -> TaskDecomposerState:
             step_outcomes={
                 **state.get("step_outcomes", {}),
                 "draft": "ok",
+                "unknown_analysis": "skipped",
                 "risk_analysis": "skipped",
                 "approval_decision": "skipped",
                 "review": "skipped",
@@ -78,6 +83,7 @@ def run_decomposer_draft(state: TaskDecomposerState) -> TaskDecomposerState:
             state,
             prompt=prompt,
             draft_response=None,
+            unknowns=[],
             structured_response=None,
             tool_name=None,
             failure_reason=str(error),
@@ -96,6 +102,7 @@ def run_decomposer_draft(state: TaskDecomposerState) -> TaskDecomposerState:
 def run_risk_analysis(state: TaskDecomposerState) -> TaskDecomposerState:
     prompt = state.get("prompt")
     draft_response = state.get("draft_response")
+    unknowns = state.get("unknowns", [])
     retry_count = state.get("retry_count", 0)
 
     if not prompt or not draft_response:
@@ -103,6 +110,7 @@ def run_risk_analysis(state: TaskDecomposerState) -> TaskDecomposerState:
             state,
             prompt=prompt,
             draft_response=draft_response,
+            unknowns=unknowns,
             structured_response=None,
             tool_name=None,
             failure_reason="Draft response is missing.",
@@ -128,13 +136,14 @@ def run_risk_analysis(state: TaskDecomposerState) -> TaskDecomposerState:
             implementation_tasks=draft_response.implementation_tasks,
             risks=risks,
             test_ideas=draft_response.test_ideas,
-            unknowns=draft_response.unknowns,
+            unknowns=unknowns,
         )
 
         return build_task_decomposer_graph_state(
             state,
             prompt=prompt,
             draft_response=draft_response,
+            unknowns=unknowns,
             structured_response=structured_response,
             tool_name="analyze_task_risks",
             failure_reason=None,
@@ -154,6 +163,7 @@ def run_risk_analysis(state: TaskDecomposerState) -> TaskDecomposerState:
             state,
             prompt=prompt,
             draft_response=draft_response,
+            unknowns=unknowns,
             structured_response=None,
             tool_name="analyze_task_risks",
             failure_reason=str(error),
@@ -165,6 +175,77 @@ def run_risk_analysis(state: TaskDecomposerState) -> TaskDecomposerState:
             step_outcomes={
                 **state.get("step_outcomes", {}),
                 "risk_analysis": "failed",
+            },
+        )
+
+
+def run_unknown_analysis(state: TaskDecomposerState) -> TaskDecomposerState:
+    prompt = state.get("prompt")
+    draft_response = state.get("draft_response")
+    retry_count = state.get("retry_count", 0)
+
+    if not prompt or not draft_response:
+        return build_task_decomposer_graph_state(
+            state,
+            prompt=prompt,
+            draft_response=draft_response,
+            unknowns=[],
+            structured_response=None,
+            tool_name=None,
+            failure_reason="Draft response is missing.",
+            retry_count=retry_count + 1,
+            approval_status=None,
+            review_reason=None,
+            review_summary=None,
+            used_fallback=False,
+            step_outcomes={
+                **state.get("step_outcomes", {}),
+                "unknown_analysis": "failed",
+            },
+        )
+
+    try:
+        raw_unknowns = analyze_task_unknowns.invoke({"task": prompt})
+        unknowns_dicts = json.loads(raw_unknowns)
+        unknowns = [UnknownItem.model_validate(item) for item in unknowns_dicts]
+
+        return build_task_decomposer_graph_state(
+            state,
+            prompt=prompt,
+            draft_response=draft_response,
+            unknowns=unknowns,
+            structured_response=None,
+            tool_name="analyze_task_unknowns",
+            failure_reason=None,
+            approval_status=None,
+            review_reason=None,
+            review_summary=None,
+            used_fallback=False,
+            step_outcomes={
+                **state.get("step_outcomes", {}),
+                "unknown_analysis": "ok",
+                "risk_analysis": "skipped",
+                "approval_decision": "skipped",
+                "review": "skipped",
+            },
+        )
+    except Exception as error:
+        return build_task_decomposer_graph_state(
+            state,
+            prompt=prompt,
+            draft_response=draft_response,
+            unknowns=[],
+            structured_response=None,
+            tool_name="analyze_task_unknowns",
+            failure_reason=str(error),
+            retry_count=retry_count + 1,
+            approval_status=None,
+            review_reason=None,
+            review_summary=None,
+            used_fallback=False,
+            step_outcomes={
+                **state.get("step_outcomes", {}),
+                "unknown_analysis": "failed",
             },
         )
 

@@ -5,11 +5,13 @@ from agentic_learning.task_decomposer_workflow.nodes import (
     run_approval_decision,
     run_decomposer_draft,
     run_risk_analysis,
+    run_unknown_analysis,
 )
 from agentic_learning.task_decomposer_workflow.routes import (
     route_after_approval_decision,
     route_after_draft,
     route_after_risk_analysis,
+    route_after_unknown_analysis,
 )
 from agentic_learning.task_decomposer_workflow.state import TaskDecomposerState
 
@@ -21,7 +23,9 @@ __all__ = [
     "route_after_draft",
     "route_after_risk_analysis",
     "route_after_approval_decision",
+    "route_after_unknown_analysis",
     "run_decomposer_draft",
     "run_risk_analysis",
     "run_approval_decision",
+    "run_unknown_analysis",
 ]
