@@ -1,4 +1,5 @@
 import json
+import os
 import unittest
 from unittest.mock import Mock, patch
 
@@ -20,6 +21,7 @@ from agentic_learning.task_decomposer_workflow.nodes import (
     run_approval_decision,
     run_decomposer_draft,
     run_risk_analysis,
+    run_unknown_analysis,
 )
 from agentic_learning.task_decomposer_workflow.policy import (
     build_review_summary,
@@ -29,7 +31,9 @@ from agentic_learning.task_decomposer_workflow.routes import (
     route_after_approval_decision,
     route_after_draft,
     route_after_risk_analysis,
+    route_after_unknown_analysis,
 )
+from agentic_learning.tools.analyze_task_unknowns import _analyze_task_unknowns
 
 
 def build_implementation_task() -> ImplementationTask:
@@ -50,11 +54,21 @@ def build_test_idea() -> TestIdea:
     )
 
 
-def build_unknown_item() -> UnknownItem:
-    return UnknownItem(
-        question="What authorization rule applies here?",
-        why_it_matters="Authorization changes the workflow and test coverage.",
-    )
+def build_unknown_item(
+    question: str = "What authorization rule applies to this task?",
+) -> UnknownItem:
+    why_it_matters = {
+        "What authorization rule applies to this task?": (
+            "Authorization changes the workflow and test coverage."
+        ),
+        "What validation rules and payload constraints are required?": (
+            "Missing validation details can break the contract and runtime behavior."
+        ),
+        "What external dependency or persistence constraint exists here?": (
+            "Dependencies can change implementation design and failure handling."
+        ),
+    }[question]
+    return UnknownItem(question=question, why_it_matters=why_it_matters)
 
 
 def build_risk_item(impact: str = "medium") -> RiskItem:
@@ -92,15 +106,27 @@ def build_result(
     )
 
 
+def build_step_outcomes() -> dict[str, str]:
+    return {
+        "draft": "skipped",
+        "unknown_analysis": "skipped",
+        "risk_analysis": "skipped",
+        "approval_decision": "skipped",
+        "review": "skipped",
+    }
+
+
 class TaskDecomposerWorkflowTests(unittest.TestCase):
     def test_build_task_decomposer_graph_state_sets_default_step_outcomes(self) -> None:
         state = build_task_decomposer_graph_state(prompt="test prompt")
 
         self.assertEqual(state["prompt"], "test prompt")
+        self.assertEqual(state["unknowns"], [])
         self.assertEqual(
             state["step_outcomes"],
             {
                 "draft": "skipped",
+                "unknown_analysis": "skipped",
                 "risk_analysis": "skipped",
                 "approval_decision": "skipped",
                 "review": "skipped",
@@ -108,12 +134,32 @@ class TaskDecomposerWorkflowTests(unittest.TestCase):
         )
 
     def test_route_after_draft_covers_success_retry_and_fallback(self) -> None:
-        self.assertEqual(route_after_draft({"failure_reason": None}), "run_risk_analysis")
         self.assertEqual(
-            route_after_draft({"failure_reason": "boom", "retry_count": 1}), "retry"
+            route_after_draft({"failure_reason": None}),
+            "run_unknown_analysis",
+        )
+        self.assertEqual(
+            route_after_draft({"failure_reason": "boom", "retry_count": 1}),
+            "retry",
         )
         self.assertEqual(
             route_after_draft({"failure_reason": "boom", "retry_count": 2}),
+            "fallback",
+        )
+
+    def test_route_after_unknown_analysis_covers_success_retry_and_fallback(
+        self,
+    ) -> None:
+        self.assertEqual(
+            route_after_unknown_analysis({"failure_reason": None}),
+            "run_risk_analysis",
+        )
+        self.assertEqual(
+            route_after_unknown_analysis({"failure_reason": "boom", "retry_count": 1}),
+            "retry",
+        )
+        self.assertEqual(
+            route_after_unknown_analysis({"failure_reason": "boom", "retry_count": 2}),
             "fallback",
         )
 
@@ -200,9 +246,120 @@ class TaskDecomposerWorkflowTests(unittest.TestCase):
             result = run_decomposer_draft({"prompt": "Build the endpoint."})
 
         self.assertIsNone(result["failure_reason"])
+        self.assertEqual(result["unknowns"], [])
         self.assertEqual(result["step_outcomes"]["draft"], "ok")
+        self.assertEqual(result["step_outcomes"]["unknown_analysis"], "skipped")
         self.assertEqual(result["step_outcomes"]["risk_analysis"], "skipped")
         agent.invoke.assert_called_once()
+
+    def test_analyze_task_unknowns_returns_empty_list_without_signal_match(self) -> None:
+        result = json.loads(_analyze_task_unknowns("Polish the README introduction text."))
+
+        self.assertEqual(result, [])
+
+    def test_analyze_task_unknowns_returns_auth_unknown_for_auth_signal(self) -> None:
+        result = json.loads(
+            _analyze_task_unknowns("Add auth checks for role-based access control.")
+        )
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["question"], "What authorization rule applies to this task?")
+
+    def test_analyze_task_unknowns_returns_validation_unknown_for_validation_signal(
+        self,
+    ) -> None:
+        result = json.loads(
+            _analyze_task_unknowns("Define validation and payload schema for the API.")
+        )
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(
+            result[0]["question"],
+            "What validation rules and payload constraints are required?",
+        )
+
+    def test_analyze_task_unknowns_limits_results_to_two_signal_groups(self) -> None:
+        result = json.loads(
+            _analyze_task_unknowns(
+                "Add auth, validation, and database queue handling for the API."
+            )
+        )
+
+        self.assertEqual(len(result), 2)
+        self.assertEqual(
+            [item["question"] for item in result],
+            [
+                "What authorization rule applies to this task?",
+                "What validation rules and payload constraints are required?",
+            ],
+        )
+
+    def test_analyze_task_unknowns_supports_forced_failure(self) -> None:
+        with patch.dict(os.environ, {"FORCE_UNKNOWN_TOOL_FAILURE": "1"}):
+            with self.assertRaises(RuntimeError):
+                _analyze_task_unknowns("Add auth checks to the endpoint.")
+
+    def test_run_unknown_analysis_sets_authoritative_unknowns_and_correct_tool_name(
+        self,
+    ) -> None:
+        tool = Mock()
+        tool.invoke.return_value = json.dumps(
+            [
+                {
+                    "question": "What authorization rule applies to this task?",
+                    "why_it_matters": (
+                        "Authorization changes the workflow and test coverage."
+                    ),
+                }
+            ]
+        )
+
+        with patch(
+            "agentic_learning.task_decomposer_workflow.nodes.analyze_task_unknowns",
+            tool,
+        ):
+            result = run_unknown_analysis(
+                {
+                    "prompt": "Build the endpoint.",
+                    "draft_response": build_draft(),
+                    "step_outcomes": {
+                        **build_step_outcomes(),
+                        "draft": "ok",
+                    },
+                }
+            )
+
+        self.assertIsNone(result["failure_reason"])
+        self.assertEqual(result["tool_name"], "analyze_task_unknowns")
+        self.assertEqual(len(result["unknowns"]), 1)
+        self.assertIsNone(result["structured_response"])
+        self.assertEqual(result["step_outcomes"]["unknown_analysis"], "ok")
+        self.assertEqual(result["step_outcomes"]["risk_analysis"], "skipped")
+
+    def test_run_unknown_analysis_failure_marks_step_and_increments_retry(self) -> None:
+        tool = Mock()
+        tool.invoke.side_effect = RuntimeError("boom")
+
+        with patch(
+            "agentic_learning.task_decomposer_workflow.nodes.analyze_task_unknowns",
+            tool,
+        ):
+            result = run_unknown_analysis(
+                {
+                    "prompt": "Build the endpoint.",
+                    "draft_response": build_draft(),
+                    "retry_count": 0,
+                    "step_outcomes": {
+                        **build_step_outcomes(),
+                        "draft": "ok",
+                    },
+                }
+            )
+
+        self.assertEqual(result["failure_reason"], "boom")
+        self.assertEqual(result["retry_count"], 1)
+        self.assertEqual(result["tool_name"], "analyze_task_unknowns")
+        self.assertEqual(result["step_outcomes"]["unknown_analysis"], "failed")
 
     def test_run_risk_analysis_without_draft_marks_failure(self) -> None:
         result = run_risk_analysis({"prompt": "Build the endpoint.", "retry_count": 0})
@@ -211,8 +368,8 @@ class TaskDecomposerWorkflowTests(unittest.TestCase):
         self.assertEqual(result["retry_count"], 1)
         self.assertEqual(result["step_outcomes"]["risk_analysis"], "failed")
 
-    def test_run_risk_analysis_success_sets_ok_step_outcome(self) -> None:
-        draft = build_draft()
+    def test_run_risk_analysis_uses_authoritative_unknowns_from_state(self) -> None:
+        draft = build_draft(unknowns=[build_unknown_item()])
         raw_risks = json.dumps(
             [
                 {
@@ -228,6 +385,9 @@ class TaskDecomposerWorkflowTests(unittest.TestCase):
 
         tool = Mock()
         tool.invoke.return_value = raw_risks
+        authoritative_unknowns = [
+            build_unknown_item("What validation rules and payload constraints are required?")
+        ]
 
         with patch(
             "agentic_learning.task_decomposer_workflow.nodes.analyze_task_risks",
@@ -237,17 +397,19 @@ class TaskDecomposerWorkflowTests(unittest.TestCase):
                 {
                     "prompt": "Build the endpoint.",
                     "draft_response": draft,
+                    "unknowns": authoritative_unknowns,
                     "step_outcomes": {
+                        **build_step_outcomes(),
                         "draft": "ok",
-                        "risk_analysis": "skipped",
-                        "approval_decision": "skipped",
-                        "review": "skipped",
+                        "unknown_analysis": "ok",
                     },
                 }
             )
 
         self.assertIsNone(result["failure_reason"])
         self.assertEqual(result["tool_name"], "analyze_task_risks")
+        self.assertEqual(result["unknowns"], authoritative_unknowns)
+        self.assertEqual(result["structured_response"].unknowns, authoritative_unknowns)
         self.assertEqual(result["step_outcomes"]["risk_analysis"], "ok")
         self.assertEqual(result["step_outcomes"]["approval_decision"], "skipped")
 
@@ -258,10 +420,10 @@ class TaskDecomposerWorkflowTests(unittest.TestCase):
                 "draft_response": build_draft(),
                 "structured_response": build_result(unknowns=[build_unknown_item()]),
                 "step_outcomes": {
+                    **build_step_outcomes(),
                     "draft": "ok",
+                    "unknown_analysis": "ok",
                     "risk_analysis": "ok",
-                    "approval_decision": "skipped",
-                    "review": "skipped",
                 },
             }
         )
@@ -279,10 +441,10 @@ class TaskDecomposerWorkflowTests(unittest.TestCase):
                 "failure_reason": "boom",
                 "retry_count": 2,
                 "step_outcomes": {
+                    **build_step_outcomes(),
                     "draft": "ok",
+                    "unknown_analysis": "ok",
                     "risk_analysis": "failed",
-                    "approval_decision": "skipped",
-                    "review": "skipped",
                 },
             }
         )
@@ -296,10 +458,11 @@ class TaskDecomposerWorkflowTests(unittest.TestCase):
             {
                 "structured_response": build_result(unknowns=[build_unknown_item()]),
                 "step_outcomes": {
+                    **build_step_outcomes(),
                     "draft": "ok",
+                    "unknown_analysis": "ok",
                     "risk_analysis": "ok",
                     "approval_decision": "ok",
-                    "review": "skipped",
                 },
             }
         )
@@ -309,11 +472,20 @@ class TaskDecomposerWorkflowTests(unittest.TestCase):
 
     def test_compiled_graph_review_path_reaches_expected_final_state(self) -> None:
         agent = Mock()
-        agent.invoke.return_value = {
-            "structured_response": build_draft(unknowns=[build_unknown_item()])
-        }
-        tool = Mock()
-        tool.invoke.return_value = json.dumps(
+        agent.invoke.return_value = {"structured_response": build_draft()}
+        unknown_tool = Mock()
+        unknown_tool.invoke.return_value = json.dumps(
+            [
+                {
+                    "question": "What authorization rule applies to this task?",
+                    "why_it_matters": (
+                        "Authorization changes the workflow and test coverage."
+                    ),
+                }
+            ]
+        )
+        risk_tool = Mock()
+        risk_tool.invoke.return_value = json.dumps(
             [
                 {
                     "risk": "Insufficient validation",
@@ -336,8 +508,11 @@ class TaskDecomposerWorkflowTests(unittest.TestCase):
             "agentic_learning.task_decomposer_workflow.nodes.get_task_decomposer_draft_agent",
             return_value=agent,
         ), patch(
+            "agentic_learning.task_decomposer_workflow.nodes.analyze_task_unknowns",
+            unknown_tool,
+        ), patch(
             "agentic_learning.task_decomposer_workflow.nodes.analyze_task_risks",
-            tool,
+            risk_tool,
         ):
             result = task_decomposer_graph.invoke({})
 
@@ -350,17 +525,21 @@ class TaskDecomposerWorkflowTests(unittest.TestCase):
         self.assertIsNotNone(result["structured_response"])
         self.assertIsNone(result["failure_reason"])
         self.assertEqual(result["step_outcomes"]["draft"], "ok")
+        self.assertEqual(result["step_outcomes"]["unknown_analysis"], "ok")
         self.assertEqual(result["step_outcomes"]["risk_analysis"], "ok")
         self.assertEqual(result["step_outcomes"]["approval_decision"], "ok")
         self.assertEqual(result["step_outcomes"]["review"], "ok")
         agent.invoke.assert_called_once()
-        tool.invoke.assert_called_once_with({"task": "Build the endpoint."})
+        unknown_tool.invoke.assert_called_once_with({"task": "Build the endpoint."})
+        risk_tool.invoke.assert_called_once_with({"task": "Build the endpoint."})
 
     def test_compiled_graph_approved_path_reaches_expected_final_state(self) -> None:
         agent = Mock()
         agent.invoke.return_value = {"structured_response": build_draft()}
-        tool = Mock()
-        tool.invoke.return_value = json.dumps(
+        unknown_tool = Mock()
+        unknown_tool.invoke.return_value = json.dumps([])
+        risk_tool = Mock()
+        risk_tool.invoke.return_value = json.dumps(
             [
                 {
                     "risk": "Insufficient validation",
@@ -383,8 +562,11 @@ class TaskDecomposerWorkflowTests(unittest.TestCase):
             "agentic_learning.task_decomposer_workflow.nodes.get_task_decomposer_draft_agent",
             return_value=agent,
         ), patch(
+            "agentic_learning.task_decomposer_workflow.nodes.analyze_task_unknowns",
+            unknown_tool,
+        ), patch(
             "agentic_learning.task_decomposer_workflow.nodes.analyze_task_risks",
-            tool,
+            risk_tool,
         ):
             result = task_decomposer_graph.invoke({})
 
@@ -397,17 +579,21 @@ class TaskDecomposerWorkflowTests(unittest.TestCase):
         self.assertIsNotNone(result["structured_response"])
         self.assertIsNone(result["failure_reason"])
         self.assertEqual(result["step_outcomes"]["draft"], "ok")
+        self.assertEqual(result["step_outcomes"]["unknown_analysis"], "ok")
         self.assertEqual(result["step_outcomes"]["risk_analysis"], "ok")
         self.assertEqual(result["step_outcomes"]["approval_decision"], "ok")
         self.assertEqual(result["step_outcomes"]["review"], "skipped")
         agent.invoke.assert_called_once()
-        tool.invoke.assert_called_once_with({"task": "Build the endpoint."})
+        unknown_tool.invoke.assert_called_once_with({"task": "Build the endpoint."})
+        risk_tool.invoke.assert_called_once_with({"task": "Build the endpoint."})
 
     def test_compiled_graph_fallback_path_reaches_expected_final_state(self) -> None:
         agent = Mock()
         agent.invoke.return_value = {"structured_response": build_draft()}
-        tool = Mock()
-        tool.invoke.side_effect = RuntimeError("boom")
+        unknown_tool = Mock()
+        unknown_tool.invoke.return_value = json.dumps([])
+        risk_tool = Mock()
+        risk_tool.invoke.side_effect = RuntimeError("boom")
 
         input_file = Mock()
         input_file.read_text.return_value = "Build the endpoint."
@@ -419,8 +605,11 @@ class TaskDecomposerWorkflowTests(unittest.TestCase):
             "agentic_learning.task_decomposer_workflow.nodes.get_task_decomposer_draft_agent",
             return_value=agent,
         ), patch(
+            "agentic_learning.task_decomposer_workflow.nodes.analyze_task_unknowns",
+            unknown_tool,
+        ), patch(
             "agentic_learning.task_decomposer_workflow.nodes.analyze_task_risks",
-            tool,
+            risk_tool,
         ):
             result = task_decomposer_graph.invoke({})
 
@@ -434,11 +623,13 @@ class TaskDecomposerWorkflowTests(unittest.TestCase):
         self.assertIsNone(result["review_reason"])
         self.assertIsNone(result["review_summary"])
         self.assertEqual(result["step_outcomes"]["draft"], "ok")
+        self.assertEqual(result["step_outcomes"]["unknown_analysis"], "ok")
         self.assertEqual(result["step_outcomes"]["risk_analysis"], "failed")
         self.assertEqual(result["step_outcomes"]["approval_decision"], "skipped")
         self.assertEqual(result["step_outcomes"]["review"], "skipped")
         agent.invoke.assert_called_once()
-        self.assertEqual(tool.invoke.call_count, 2)
+        unknown_tool.invoke.assert_called_once_with({"task": "Build the endpoint."})
+        self.assertEqual(risk_tool.invoke.call_count, 2)
 
 
 if __name__ == "__main__":

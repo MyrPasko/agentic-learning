@@ -49,6 +49,7 @@ By the end of Week 1, this repo proves the following:
 - Day 11: add one narrow `analyze_task_risks` tool path and a demo entrypoint that makes tool use visible alongside the final structured decomposition.
 - Day 12: move the Day 10-11 decomposer path into the first explicit LangGraph workflow, which later became the current `read_input -> run_decomposer_draft -> run_risk_analysis` path.
 - Day 13: add one forced-failure trigger for `analyze_task_risks` plus one bounded retry and fallback branch around the graph-backed decomposer run.
+- Day 23: add `analyze_task_unknowns` as a separate deterministic clarity-analysis step before risk analysis so Project 1 now uses at least two meaningful domain tool paths.
 
 ## Current Behavior Guarantees
 
@@ -207,6 +208,7 @@ Expected normal Day 13 demo output includes:
 - `Prompt: ...`
 - `Status: ok`
 - `Draft step: ok`
+- `Unknown analysis step: ok` or `Unknown analysis step: skipped`
 - `Risk analysis step: ok`
 - `Approval decision step: ok`
 - `Review step: ok` or `Review step: skipped`
@@ -216,6 +218,7 @@ Expected normal Day 13 demo output includes:
 Expected forced-failure Day 13 demo output includes:
 
 - `Status: fallback`
+- `Unknown analysis step: ok` or `Unknown analysis step: failed`
 - `Risk analysis step: failed`
 - `Approval decision step: skipped`
 - `Review step: skipped`
@@ -224,8 +227,8 @@ Expected forced-failure Day 13 demo output includes:
 
 Current workflow limitations:
 
-- this slice now routes through one explicit LangGraph workflow with separate draft-generation, risk-analysis, approval-decision, and review boundaries before completion or fallback;
-- it still reads one fixed markdown task input and exposes one narrow risk-analysis tool path;
+- this slice now routes through one explicit LangGraph workflow with separate draft-generation, unknown-analysis, risk-analysis, approval-decision, and review boundaries before completion or fallback;
+- it still reads one fixed markdown task input and exposes narrow `unknown` and `risk` analysis tool paths;
 - retry is modeled separately for the draft-generation node and the risk-analysis node;
 - it does not support CLI-selected files, multi-source ingestion, multi-tool planning, or broader review/approval policies yet.
 

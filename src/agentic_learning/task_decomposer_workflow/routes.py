@@ -3,6 +3,7 @@ from agentic_learning.task_decomposer_workflow.state import (
     RouteAfterApprovalDecision,
     RouteAfterDraft,
     RouteAfterRiskAnalysis,
+    RouteAfterUnknownAnalysis,
     TaskDecomposerState,
 )
 
@@ -10,6 +11,21 @@ from agentic_learning.task_decomposer_workflow.state import (
 def route_after_draft(
     state: TaskDecomposerState,
 ) -> RouteAfterDraft:
+    failure_reason = state.get("failure_reason")
+    retry_count = state.get("retry_count", 0)
+
+    if not failure_reason:
+        return "run_unknown_analysis"
+
+    if retry_count <= MAX_RETRY_COUNT:
+        return "retry"
+
+    return "fallback"
+
+
+def route_after_unknown_analysis(
+    state: TaskDecomposerState,
+) -> RouteAfterUnknownAnalysis:
     failure_reason = state.get("failure_reason")
     retry_count = state.get("retry_count", 0)
 

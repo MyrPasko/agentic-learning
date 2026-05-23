@@ -9,6 +9,7 @@ def build_task_decomposer_graph_state(
     next_state: TaskDecomposerState = {
         "prompt": None,
         "draft_response": None,
+        "unknowns": [],
         "structured_response": None,
         "tool_name": None,
         "failure_reason": None,
@@ -19,6 +20,7 @@ def build_task_decomposer_graph_state(
         "review_summary": None,
         "step_outcomes": {
             "draft": "skipped",
+            "unknown_analysis": "skipped",
             "risk_analysis": "skipped",
             "approval_decision": "skipped",
             "review": "skipped",

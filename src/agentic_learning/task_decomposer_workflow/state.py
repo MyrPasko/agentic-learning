@@ -3,6 +3,7 @@ from typing import Literal, TypedDict
 
 from agentic_learning.schemas.task_decomposer_result import (
     TaskDecomposerDraft,
+    UnknownItem,
     TaskDecomposerResult,
 )
 
@@ -17,7 +18,8 @@ MAX_RETRY_COUNT = 1
 ApprovalStatus = Literal["approved", "review_required"] | None
 ReviewReason = str | None
 StepOutcome = Literal["ok", "failed", "skipped"]
-RouteAfterDraft = Literal["run_risk_analysis", "retry", "fallback"]
+RouteAfterDraft = Literal["run_unknown_analysis", "retry", "fallback"]
+RouteAfterUnknownAnalysis = Literal["run_risk_analysis", "retry", "fallback"]
 RouteAfterRiskAnalysis = Literal["retry", "fallback", "approval_decision"]
 RouteAfterApprovalDecision = Literal["done", "review", "retry", "fallback"]
 
@@ -25,6 +27,7 @@ RouteAfterApprovalDecision = Literal["done", "review", "retry", "fallback"]
 class StepOutcomes(TypedDict):
     draft: StepOutcome
     risk_analysis: StepOutcome
+    unknown_analysis: StepOutcome
     approval_decision: StepOutcome
     review: StepOutcome
 
@@ -32,6 +35,7 @@ class StepOutcomes(TypedDict):
 class TaskDecomposerState(TypedDict, total=False):
     prompt: str | None
     draft_response: TaskDecomposerDraft | None
+    unknowns: list[UnknownItem]
     structured_response: TaskDecomposerResult | None
     tool_name: str | None
     failure_reason: str | None
