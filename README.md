@@ -103,6 +103,7 @@ make test-workflow
 make validate-task
 make validate-task-eval-dataset
 make eval-task
+make eval-task-failure-log
 make demo-task
 make demo-task-fallback
 ```
@@ -183,6 +184,12 @@ make validate-task-eval-dataset
 make eval-task
 ```
 
+- failure log plus portfolio-facing eval note:
+
+```bash
+make eval-task-failure-log
+```
+
 - normal graph-backed decomposer run:
 
 ```bash
@@ -247,6 +254,7 @@ Current workflow limitations:
 - it does not support CLI-selected files, multi-source ingestion, multi-tool planning, or broader review/approval policies yet.
 - the first eval artifact is a deterministic local dataset at `src/agentic_learning/evals/data/task_decomposer_eval_dataset_v1.json`; it stores draft fixtures plus expected unknown, risk, approval, and quality signals so evaluation can stay reproducible without depending on live model output.
 - the deterministic eval runner writes `artifacts/evals/task_decomposer_eval_summary_v1.json` by invoking the real compiled graph against dataset-provided draft, unknown, and risk fixtures, so graph/policy behavior stays reproducible without live model drift or keyword-heuristic coupling.
+- the current failure-analysis surface is generated locally into `artifacts/evals/task_decomposer_failure_log_v1.md` and `artifacts/evals/task_decomposer_eval_note_v1.md`; it records current guarded review buckets, the harness proof boundary, and the current portfolio-facing explanation of the eval surface.
 
 ## Tracing
 
