@@ -295,6 +295,7 @@ Artifact map:
 - machine-readable summary: `artifacts/evals/task_decomposer_eval_summary_v1.json`
 - failure log: `artifacts/evals/task_decomposer_failure_log_v1.md`
 - short eval note: `artifacts/evals/task_decomposer_eval_note_v1.md`
+- compact workflow note: `docs/Project1_Task_Decomposer_Workflow.md`
 
 ## Tracing
 
