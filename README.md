@@ -101,6 +101,7 @@ Most useful shortcuts:
 make test
 make test-workflow
 make validate-task
+make validate-task-eval-dataset
 make demo-task
 make demo-task-fallback
 ```
@@ -169,6 +170,12 @@ make validate-task
 make test
 ```
 
+- eval dataset validation:
+
+```bash
+make validate-task-eval-dataset
+```
+
 - normal graph-backed decomposer run:
 
 ```bash
@@ -231,6 +238,7 @@ Current workflow limitations:
 - it still reads one fixed markdown task input and exposes narrow `unknown` and `risk` analysis tool paths;
 - retry is modeled separately for the draft-generation node and the risk-analysis node;
 - it does not support CLI-selected files, multi-source ingestion, multi-tool planning, or broader review/approval policies yet.
+- the first eval artifact is a deterministic local dataset at `src/agentic_learning/evals/data/task_decomposer_eval_dataset_v1.json`; it stores draft fixtures plus expected unknown, risk, approval, and quality signals so evaluation can stay reproducible without depending on live model output.
 
 ## Tracing
 
