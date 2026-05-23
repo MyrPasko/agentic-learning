@@ -41,7 +41,7 @@ By the end of Week 1, this repo proves the following:
 - Day 5: LangSmith tracing and first trace inspection.
 - Day 6: fallback output contract for runtime failures.
 
-## Week 2 Progression
+## Project 1 Progression
 
 - Day 8: first `AI Task Decomposer` contract slice with sample inputs, typed output schema, deterministic validation, and one minimal structured-output run.
 - Day 9: harden the decomposer contract with nested typed items, stricter validation, trimmed input normalization, duplicate checks for `done_criteria`, and a stronger structured-output prompt.
@@ -49,7 +49,42 @@ By the end of Week 1, this repo proves the following:
 - Day 11: add one narrow `analyze_task_risks` tool path and a demo entrypoint that makes tool use visible alongside the final structured decomposition.
 - Day 12: move the Day 10-11 decomposer path into the first explicit LangGraph workflow, which later became the current `read_input -> run_decomposer_draft -> run_risk_analysis` path.
 - Day 13: add one forced-failure trigger for `analyze_task_risks` plus one bounded retry and fallback branch around the graph-backed decomposer run.
+- Day 15: add the first approval checkpoint so risky or incomplete outputs no longer pass straight through by default.
+- Day 16: turn the review path into the first deterministic review artifact with `review_summary`.
+- Day 17: split risk analysis into its own explicit graph node boundary.
+- Day 18: split approval into its own explicit workflow node after risk analysis.
+- Day 19: add explicit workflow `step_outcomes` so end-state reporting stops inferring state from loose fields.
+- Day 20: add focused deterministic tests for routes, policy, fallback, review, and step outcomes.
+- Day 21: add compiled-graph deterministic tests for review and fallback end states.
+- Day 22: add the compiled-graph approved-path test so terminal-state coverage reaches approved, review, and fallback.
 - Day 23: add `analyze_task_unknowns` as a separate deterministic clarity-analysis step before risk analysis so Project 1 now uses at least two meaningful domain tool paths.
+- Day 24: add the first formal eval dataset contract and a checked-in 21-case corpus.
+- Day 25: add the deterministic eval runner and machine-readable JSON summary artifact.
+- Day 26: add the failure-log generator and the short portfolio-facing eval note.
+- Day 27: add the repo-facing `Project 1 Eval Surface` explanation layer in `README.md`.
+- Day 28: add the compact workflow and architecture note.
+- Day 29: add the final prompt-contracts and failure-modes note, closing the last missing Project 1 documentation artifact.
+
+## Project 1 Closeout Status
+
+Project 1 is closed as a portfolio-ready learning slice.
+
+Current artifact set:
+
+- README repo overview and eval-surface summary
+- sample task inputs under `src/examples/`
+- deterministic schema validation
+- explicit LangGraph workflow with approval/review/fallback paths
+- two meaningful domain tool paths: `analyze_task_unknowns` and `analyze_task_risks`
+- eval dataset, eval summary, failure log, and short eval note
+- workflow architecture note
+- prompt contracts and failure modes note
+
+Remaining honesty note:
+
+- the repo demonstrates Project 1 well enough to move on;
+- the one thing not curated as a portfolio asset inside the repo surface is a dedicated Project 1 trace link or screenshot;
+- that gap is visible on purpose rather than being smoothed over.
 
 ## Current Behavior Guarantees
 
@@ -306,7 +341,7 @@ Week 1 tracing was verified in LangSmith with:
 - root trace: `LangGraph`
 - nested runs including `ChatAnthropic`, `tools`, `add_numbers`, and `multiply_numbers`
 
-If traces do not appear on this machine, verify local LangSmith configuration, including `LANGSMITH_TRACING`, `LANGSMITH_API_KEY`, `LANGSMITH_PROJECT`, and `LANGSMITH_ENDPOINT` when a non-default endpoint is required.
+Project 1 model-backed runs were also re-verified locally during the later closeout passes, but a dedicated Project 1 trace link or screenshot is not currently curated in the repo surface. If traces do not appear on this machine, verify local LangSmith configuration, including `LANGSMITH_TRACING`, `LANGSMITH_API_KEY`, `LANGSMITH_PROJECT`, and `LANGSMITH_ENDPOINT` when a non-default endpoint is required.
 
 This repository uses `LANGSMITH_PROJECT=agentic-learning-week1` as the canonical project name for the preserved Week 1 tracing evidence and follow-up local runs. If you change the project name locally, new traces will land in a different bucket and the historical notes in this repo will no longer match what you see in LangSmith.
 
@@ -340,6 +375,10 @@ Day 10 keeps the same contract and agent prompt, but replaces the hardcoded inli
 
 Day 11 keeps the Day 10 ingestion path, adds one explicit `analyze_task_risks` tool, and introduces `task_decomposer_demo` so the repo can show both the final structured result and the tool name used during the run.
 
-Day 12 introduced the first explicit LangGraph workflow boundary. The current version has evolved that path into `read_input -> run_decomposer_draft -> run_risk_analysis`, where the draft agent and the risk-analysis tool now live in separate workflow nodes.
+Day 12 introduced the first explicit LangGraph workflow boundary. The current version has since evolved into `read_input -> run_decomposer_draft -> run_unknown_analysis -> run_risk_analysis -> run_approval_decision -> review_output|fallback|END`.
 
-Day 13 kept the graph boundary, added one forced-failure trigger for `analyze_task_risks`, one bounded retry before fallback, and visible retry-count evidence in the demo output so the degraded path could be exercised deliberately instead of inferred. The current graph keeps that degraded-path evidence while modeling the risk-analysis step as its own node.
+Day 13 added one forced-failure trigger for `analyze_task_risks`, one bounded retry before fallback, and visible retry-count evidence in the demo output so the degraded path could be exercised deliberately instead of inferred.
+
+Days 15-23 turned the decomposer from a single structured-output slice into a controlled workflow with explicit approval policy, review artifact, step outcomes, compiled-graph terminal-state tests, and the second meaningful tool path for `unknowns`.
+
+Days 24-29 turned the controlled workflow into a more legible portfolio artifact set: checked-in eval corpus, deterministic eval runner, failure log, repo-facing eval explanation, workflow note, and the final prompt-contracts/failure-modes note.
