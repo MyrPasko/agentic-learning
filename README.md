@@ -256,6 +256,46 @@ Current workflow limitations:
 - the deterministic eval runner writes `artifacts/evals/task_decomposer_eval_summary_v1.json` by invoking the real compiled graph against dataset-provided draft, unknown, and risk fixtures, so graph/policy behavior stays reproducible without live model drift or keyword-heuristic coupling.
 - the current failure-analysis surface is generated locally into `artifacts/evals/task_decomposer_failure_log_v1.md` and `artifacts/evals/task_decomposer_eval_note_v1.md`; it records current guarded review buckets, the harness proof boundary, and the current portfolio-facing explanation of the eval surface.
 
+## Project 1 Eval Surface
+
+If you want the shortest honest read on Project 1 today, start here instead of opening the raw JSON first.
+
+Current deterministic snapshot:
+
+- eval cases: 21
+- passing cases: 21/21
+- approved outcomes: 6
+- review-required outcomes: 15
+- unknown-driven review cases: 11
+- high-risk review cases: 4
+
+Why this matters:
+
+- the repo now proves more than schema shape; it proves compiled-graph routing, approval decisions, review branching, and a narrow set of output-quality checks against a fixed corpus;
+- `review_required` is not treated as an eval failure here; it is an expected guarded workflow outcome when unknowns or high-risk signals are present;
+- the current failure log separates real mismatches from expected review states so the artifact does not confuse control behavior with regression.
+
+What the current deterministic harness proves:
+
+- the compiled graph still reaches stable `approved` and `review_required` end states;
+- approval logic matches the dataset-provided unknown and risk signals;
+- workflow step outcomes remain explicit across draft, unknown analysis, risk analysis, approval decision, and review;
+- basic structured-output checks stay stable: implementation task count, test idea count, unknown count, risk count, and done-criteria uniqueness.
+
+What it does not prove yet:
+
+- live model draft quality or prompt drift, because the draft edge is fixture-driven in the eval harness;
+- real unknown/risk tool heuristic quality, because those analysis edges are also fixture-driven in the eval run;
+- fallback behavior inside the eval suite, because forced-failure proof still lives in separate workflow tests and demo commands;
+- trace quality, latency, cost, or network sensitivity.
+
+Artifact map:
+
+- dataset: `src/agentic_learning/evals/data/task_decomposer_eval_dataset_v1.json`
+- machine-readable summary: `artifacts/evals/task_decomposer_eval_summary_v1.json`
+- failure log: `artifacts/evals/task_decomposer_failure_log_v1.md`
+- short eval note: `artifacts/evals/task_decomposer_eval_note_v1.md`
+
 ## Tracing
 
 Week 1 tracing was verified in LangSmith with:
