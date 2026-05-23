@@ -1,0 +1,9 @@
+{
+  "dependencies": [
+    "."
+  ],
+  "graphs": {
+    "task_decomposer_agent": "./src/agentic_learning/structured_task_decomposer_agent_call.py:get_task_decomposer_draft_agent"
+  },
+  "env": ".env"
+}
