@@ -86,6 +86,19 @@ Remaining honesty note:
 - the one thing not curated as a portfolio asset inside the repo surface is a dedicated Project 1 trace link or screenshot;
 - that gap is visible on purpose rather than being smoothed over.
 
+## Project 2 Start
+
+Project 2 starts with a narrow contract-first slice for `PR Review Copilot Workflow`.
+
+The first slice is intentionally pre-graph:
+
+- one controlled PR-summary input artifact;
+- one typed review-intake classification schema;
+- one structured agent path that reads the sample input and returns validated output;
+- one deterministic validator for the intake contract.
+
+This keeps the trust boundary explicit before architecture, testing, risk, consolidate, or HITL nodes are introduced.
+
 ## Current Behavior Guarantees
 
 The routing demo currently guarantees:
@@ -137,8 +150,10 @@ make test
 make test-workflow
 make validate-task
 make validate-task-eval-dataset
+make validate-pr-review-intake
 make eval-task
 make eval-task-failure-log
+make demo-pr-review-intake
 make demo-task
 make demo-task-fallback
 ```
@@ -191,6 +206,18 @@ Day 8 and Day 9 deterministic task-decomposer contract demo:
 
 ```bash
 make validate-task
+```
+
+Day 30 deterministic Project 2 intake-contract demo:
+
+```bash
+make validate-pr-review-intake
+```
+
+Day 30 structured PR-review intake demo:
+
+```bash
+make demo-pr-review-intake
 ```
 
 Week 2 canonical demo set:
