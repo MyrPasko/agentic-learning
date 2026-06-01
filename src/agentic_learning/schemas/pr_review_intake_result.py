@@ -1,10 +1,9 @@
-from typing import Annotated, Literal
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-FileName = Annotated[str, Field(min_length=1, max_length=255)]
-ShortText = Annotated[str, Field(min_length=8, max_length=120)]
-MediumText = Annotated[str, Field(min_length=20, max_length=300)]
+from agentic_learning.helpers.pr_review_helpers import FileName, MediumText, ShortText
+
 ChangeType = Literal["api", "frontend", "data", "infra", "mixed", "unclear"]
 
 
