@@ -2,17 +2,14 @@ from agentic_learning.schemas.pr_review_testing_result import (
     PrReviewTestingResult,
 )
 from agentic_learning.structured_pr_review_intake_agent_call import (
-    run_structured_pr_review_intake_agent,
+    get_validated_structured_pr_review_intake_response,
 )
 from agentic_learning.structured_pr_testing_review_agent import (
     get_pr_testing_review_agent,
 )
 
 
-def run_structured_pr_testing_review_agent() -> PrReviewTestingResult:
-    pr_intake_result_raw = run_structured_pr_review_intake_agent()
-    pr_intake_result = pr_intake_result_raw.model_dump_json(indent=2)
-
+def run_structured_pr_testing_review_agent(intake_prompt: str) -> PrReviewTestingResult:
     result = get_pr_testing_review_agent().invoke(
         {
             "messages": [
@@ -21,7 +18,7 @@ def run_structured_pr_testing_review_agent() -> PrReviewTestingResult:
                     "content": (
                         "Review the following structured PR intake result and return only the "
                         "structured testing-review result:\n\n"
-                        f"{pr_intake_result}"
+                        f"{intake_prompt}"
                     ),
                 }
             ]
@@ -33,9 +30,15 @@ def run_structured_pr_testing_review_agent() -> PrReviewTestingResult:
     return PrReviewTestingResult.model_validate(structured_response)
 
 
+def get_validated_structured_pr_testing_review_response(intake_prompt: str) -> str:
+    result = run_structured_pr_testing_review_agent(intake_prompt)
+    return result.model_dump_json(indent=2)
+
+
 def main() -> None:
-    result = run_structured_pr_testing_review_agent()
-    print(result.model_dump_json(indent=2))
+    intake_result = get_validated_structured_pr_review_intake_response()
+    result = get_validated_structured_pr_testing_review_response(intake_result)
+    print(result)
 
 
 if __name__ == "__main__":
