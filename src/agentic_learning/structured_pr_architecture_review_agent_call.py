@@ -5,14 +5,13 @@ from agentic_learning.structured_pr_architecture_review_agent import (
     get_pr_architecture_review_agent,
 )
 from agentic_learning.structured_pr_review_intake_agent_call import (
-    run_structured_pr_review_intake_agent,
+    get_validated_structured_pr_review_intake_response,
 )
 
 
-def run_structured_pr_architecture_review_agent() -> PrReviewArchitectureResult:
-    pr_intake_result_raw = run_structured_pr_review_intake_agent()
-    pr_intake_result = pr_intake_result_raw.model_dump_json(indent=2)
-
+def run_structured_pr_architecture_review_agent(
+    intake_result: str,
+) -> PrReviewArchitectureResult:
     result = get_pr_architecture_review_agent().invoke(
         {
             "messages": [
@@ -21,7 +20,7 @@ def run_structured_pr_architecture_review_agent() -> PrReviewArchitectureResult:
                     "content": (
                         "Review the following structured PR intake result and return only the "
                         "structured architecture-review result:\n\n"
-                        f"{pr_intake_result}"
+                        f"{intake_result}"
                     ),
                 }
             ]
@@ -33,9 +32,15 @@ def run_structured_pr_architecture_review_agent() -> PrReviewArchitectureResult:
     return PrReviewArchitectureResult.model_validate(structured_response)
 
 
+def get_validated_structured_pr_architecture_review_response(intake_result: str) -> str:
+    result = run_structured_pr_architecture_review_agent(intake_result)
+    return result.model_dump_json(indent=2)
+
+
 def main() -> None:
-    result = run_structured_pr_architecture_review_agent()
-    print(result.model_dump_json(indent=2))
+    intake_result = get_validated_structured_pr_review_intake_response()
+    result = get_validated_structured_pr_architecture_review_response(intake_result)
+    print(result)
 
 
 if __name__ == "__main__":

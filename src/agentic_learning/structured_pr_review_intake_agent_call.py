@@ -34,9 +34,14 @@ def run_structured_pr_review_intake_agent() -> PrReviewIntakeResult:
     return PrReviewIntakeResult.model_validate(structured_response)
 
 
-def main() -> None:
+def get_validated_structured_pr_review_intake_response() -> str:
     result = run_structured_pr_review_intake_agent()
-    print(result.model_dump_json(indent=2))
+    return result.model_dump_json(indent=2)
+
+
+def main() -> None:
+    result = get_validated_structured_pr_review_intake_response()
+    print(result)
 
 
 if __name__ == "__main__":
