@@ -220,6 +220,18 @@ Day 30 structured PR-review intake demo:
 make demo-pr-review-intake
 ```
 
+Day 31 deterministic Project 2 architecture-review contract demo:
+
+```bash
+make validate-pr-review-architecture
+```
+
+Day 31 structured PR architecture-review demo:
+
+```bash
+make demo-pr-review-architecture
+```
+
 Week 2 canonical demo set:
 
 - contract validation:
