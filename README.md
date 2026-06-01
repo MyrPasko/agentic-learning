@@ -244,6 +244,18 @@ Day 32 structured PR testing-review demo:
 make demo-pr-review-testing
 ```
 
+Day 33 deterministic Project 2 risk-review contract demo:
+
+```bash
+make validate-pr-review-risk
+```
+
+Day 33 structured PR risk-review demo:
+
+```bash
+make demo-pr-review-risk
+```
+
 Week 2 canonical demo set:
 
 - contract validation:
