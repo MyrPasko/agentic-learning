@@ -1,7 +1,7 @@
 PYTHON ?= ./.venv/bin/python
 LOCAL_ENV = env PYTHONDONTWRITEBYTECODE=1 LANGSMITH_TRACING=false LANGCHAIN_TRACING_V2=false
 
-.PHONY: help install sanity test test-workflow validate-arithmetic validate-task validate-task-eval-dataset validate-pr-review-intake validate-pr-review-architecture eval-task eval-task-failure-log demo-direct demo-agent demo-routing demo-structured demo-pr-review-intake demo-pr-review-architecture demo-task demo-task-fallback
+.PHONY: help install sanity test test-workflow validate-arithmetic validate-task validate-task-eval-dataset validate-pr-review-intake validate-pr-review-architecture validate-pr-review-testing eval-task eval-task-failure-log demo-direct demo-agent demo-routing demo-structured demo-pr-review-intake demo-pr-review-architecture demo-pr-review-testing demo-task demo-task-fallback
 
 help:
 	@printf "Available targets:\n"
@@ -14,6 +14,7 @@ help:
 	@printf "  make validate-task-eval-dataset  Run the task-decomposer eval dataset validator.\n"
 	@printf "  make validate-pr-review-intake  Run the Project 2 intake schema validator.\n"
 	@printf "  make validate-pr-review-architecture  Run the Project 2 architecture-review schema validator.\n"
+	@printf "  make validate-pr-review-testing  Run the Project 2 testing-review schema validator.\n"
 	@printf "  make eval-task            Run the deterministic task-decomposer eval suite and write its JSON summary.\n"
 	@printf "  make eval-task-failure-log  Refresh the eval summary, failure log, and portfolio note artifacts.\n"
 	@printf "  make demo-direct          Run the direct tool call demo.\n"
@@ -22,6 +23,7 @@ help:
 	@printf "  make demo-structured      Run the structured task-decomposer agent path.\n"
 	@printf "  make demo-pr-review-intake  Run the Project 2 structured PR intake demo.\n"
 	@printf "  make demo-pr-review-architecture  Run the Project 2 structured architecture-review demo.\n"
+	@printf "  make demo-pr-review-testing  Run the Project 2 structured testing-review demo.\n"
 	@printf "  make demo-task            Run the graph-backed task decomposer demo.\n"
 	@printf "  make demo-task-fallback   Run the forced-failure graph demo.\n"
 
@@ -52,6 +54,9 @@ validate-pr-review-intake:
 validate-pr-review-architecture:
 	$(LOCAL_ENV) $(PYTHON) -m agentic_learning.validate_pr_review_architecture_result
 
+validate-pr-review-testing:
+	$(LOCAL_ENV) $(PYTHON) -m agentic_learning.validate_pr_review_testing_result
+
 eval-task:
 	$(LOCAL_ENV) $(PYTHON) -m agentic_learning.run_task_decomposer_eval
 
@@ -80,6 +85,10 @@ demo-pr-review-intake:
 demo-pr-review-architecture:
 	@test -f .env || { echo ".env is missing. Create it from .env.example first."; exit 1; }
 	@set -a; . ./.env; set +a; $(PYTHON) -m agentic_learning.structured_pr_architecture_review_agent_call
+
+demo-pr-review-testing:
+	@test -f .env || { echo ".env is missing. Create it from .env.example first."; exit 1; }
+	@set -a; . ./.env; set +a; $(PYTHON) -m agentic_learning.structured_pr_testing_review_agent_call
 
 demo-task:
 	@test -f .env || { echo ".env is missing. Create it from .env.example first."; exit 1; }
