@@ -47,16 +47,12 @@ def build_consolidation_review_prompt(
     )
 
 
-def run_structured_pr_consolidation_review_agent() -> PrConsolidationResult:
-    intake_result = run_structured_pr_review_intake_agent()
-    intake_result_json = intake_result.model_dump_json(indent=2)
-
-    architecture_result = run_structured_pr_architecture_review_agent(
-        intake_result_json
-    )
-    testing_result = run_structured_pr_testing_review_agent(intake_result_json)
-    risk_result = run_structured_pr_risk_review_agent(intake_result_json)
-
+def run_structured_pr_consolidation_review_from_artifacts(
+    intake_result: PrReviewIntakeResult,
+    architecture_result: PrReviewArchitectureResult,
+    testing_result: PrReviewTestingResult,
+    risk_result: PrReviewRiskResult,
+) -> PrConsolidationResult:
     result = get_pr_consolidation_review_agent().invoke(
         {
             "messages": [
@@ -84,6 +80,24 @@ def run_structured_pr_consolidation_review_agent() -> PrConsolidationResult:
     )
 
     return consolidation_result
+
+
+def run_structured_pr_consolidation_review_agent() -> PrConsolidationResult:
+    intake_result = run_structured_pr_review_intake_agent()
+    intake_result_json = intake_result.model_dump_json(indent=2)
+
+    architecture_result = run_structured_pr_architecture_review_agent(
+        intake_result_json
+    )
+    testing_result = run_structured_pr_testing_review_agent(intake_result_json)
+    risk_result = run_structured_pr_risk_review_agent(intake_result_json)
+
+    return run_structured_pr_consolidation_review_from_artifacts(
+        intake_result,
+        architecture_result,
+        testing_result,
+        risk_result,
+    )
 
 
 def main() -> None:

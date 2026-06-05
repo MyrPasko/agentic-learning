@@ -268,6 +268,12 @@ Day 34 structured PR consolidation-review demo:
 make demo-pr-review-consolidation
 ```
 
+Day 35/36 Project 2 graph plus HITL approval-gate demo:
+
+```bash
+make demo-pr-review-graph
+```
+
 Week 2 canonical demo set:
 
 - contract validation:
