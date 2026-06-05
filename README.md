@@ -99,6 +99,27 @@ The first slice is intentionally pre-graph:
 
 This keeps the trust boundary explicit before architecture, testing, risk, consolidate, or HITL nodes are introduced.
 
+Project 2 is no longer just the intake slice.
+
+The current repo now has:
+
+- one typed intake contract;
+- three specialized reviewer boundaries: architecture, testing, and risk;
+- one consolidation boundary;
+- one explicit LangGraph workflow entrypoint;
+- one first HITL approval gate with a visible `review_required` stop path.
+
+Project 2 repo-facing notes:
+
+- [Project 2 PR Review Workflow](docs/Project2_PR_Review_Workflow.md)
+
+Why the graph is justified here:
+
+- the workflow now has separate reviewer responsibilities instead of one generic review prompt;
+- consolidation is a distinct aggregation boundary;
+- approval is policy-driven and can stop the workflow for human review;
+- the stop condition is visible in code and in the live demo surface, not hidden in prompt prose.
+
 ## Current Behavior Guarantees
 
 The routing demo currently guarantees:
